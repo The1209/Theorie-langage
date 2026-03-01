@@ -1,0 +1,154 @@
+* = Répète l’élément qui le précède 0 ou  plusieurs fois.
++ = Répète l’élément qui le précède 1 ou  plusieurs fois
+? = Répète l’élément qui le précède 0 ou 1 fois
+
+____________________________________________________________________________________________________________________
+                                                EXERCICE 1:
+
+L1 = a*
+S -> aS|∈
+soit w = a^3 appartient à L1
+S-> aS -> aaS -> aaaS -> aaa
+_______________________________
+L2 = a+
+S -> aS|a 
+pour w = a^3
+S -> aS -> a^2S -> a3
+_______________________________
+L3 = b^*a?b*
+S -> BAB
+B -> bB|∈
+A -> a|∈
+_______________________________
+L4 = a*b*
+S -> AB
+A -> aA|∈
+_______________________________
+L5 = (a|ba)*
+S -> aS|baS|∈
+_______________________________
+
+L6 = a(bc)+b|d)f*
+S -> aBF|adf
+B -> bcB|bcb
+F -> fF|∈
+_______________________________
+
+____________________________________________________________________________________________________________________
+                                                EXERCICE 2:
+
+* = Répète l’élément qui le précède 0 ou  plusieurs fois.
++ = Répète l’élément qui le précède 1 ou  plusieurs fois
+? = Répète l’élément qui le précède 0 ou 1 fois
+_______________________________
+
+L1 =  S -> aSb|∈
+_______________________________
+
+L2 =  S -> aSa|bSb|∈|a|b
+_______________________________
+
+L3 = (b*ab*ab*a)*
+S -> SA|∈|B
+A -> BaBaBaB
+B -> bB|∈
+_______________________________
+L32 = S -> AC 
+      A -> aAb|∈
+      C -> bCc|∈
+_______________________________
+L4 =  S  -> aSBc
+      cB -> bc
+      SB -> b
+      bB -> bb
+_______________________________
+L5= 
+S ->  SS | (S) | ∈
+_______________________________
+w1= (())()
+S ->  SS | (S) | ∈
+S->SS->S(S)->(S)(S)->((S))(S)->(())()
+_______________________________
+w2= ()()()
+S->SS->SSS->SS(S)-> S(S)(S)->(S)(S)(S)->()()()
+
+____________________________________________________________________________________________________________________
+                                                CC1 Blanc:
+
+
+
+* = Répète l’élément qui le précède 0 ou  plusieurs fois.
++ = Répète l’élément qui le précède 1 ou  plusieurs fois
+? = Répète l’élément qui le précède 0 ou 1 fois
+
+
+exercice 1:
+1.
+taille 3: baa
+taille 4: aaaa, baba, aaba, baaa
+taille 5:babaa, baaaa,aabaa, baaba
+
+2.
+taille 6: acbbab, acbabb, abcbbcb
+
+3.
+1 qui est bon
+
+exercice 2:
+
+L1= { 𝑎^2n ba^n, avec  n> 0}
+S -> aaSa | b 
+
+
+exercice 3: 
+
+1.
+a+
+
+2.
+a^3
+
+3.
+S->aS|a
+
+L1 ={a^k b^n c^n d^k, k>=1, n >= 0}
+
++ abbccd, ad, abcd, aaabbbcccddd= S-> aSd|aAd
+- aabcdd,                         A-> bAc|∈ 
+
+L1= 
+VT= {0,1,—,9,+,-,*,(,)}
++                 -
+1+2              (1+2)(2+3)
+(1+2)+3           )1+2()
+(1x3)+2
+12/0
+
+S-> SopS|(S)|N|(-N)
+Op->+|-|*|/
+N->NC|c
+C->0|1|-|9
+C–>1|-|9
+
+1+2*3
+
+
+S
+
+
+
+
+
+                              
+                                  
+                                                  
+
+
+
+
+
+
+
+
+
+
