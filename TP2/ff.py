@@ -5,8 +5,9 @@ from genereTreeGraphviz2 import printTreeGraph
 reserved={
         'print':'PRINT',
         'if':'IF',
-        'else':'ELSE'
-        
+        'else':'ELSE',
+        'while': 'WHILE',
+        'for': 'FOR'
         
         }
 
@@ -72,23 +73,39 @@ def evalInst(t):# void
     if t[0] == 'bloc':
         evalInst(t[1])
         evalInst(t[2])
+    elif t[0] == 'assign':
+        names[t[1]]=evalExpr(t[2])
+       
     elif t[0] == 'if':
         if evalExpr(t[1]):
             evalInst(t[2])
         else:
-         if len(t) == 4:
+            if len(t) == 4:
+                evalInst(t[3])
+    elif t[0] == 'while':              
+        while evalExpr(t[1]):
+            evalInst(t[2])
+    elif t[0] == 'for':                
+        evalInst(t[1]) 
+        while evalExpr(t[2]):
+            evalInst(t[4]) 
             evalInst(t[3])
-     
 
     if t[0] == 'print': print('CALC>', evalExpr(t[1]))
 
         
-def evalExpr(t):# renvoie un int
-    print('evalExpr de ', t)
-    if type(t) ==  int : return t
-    if type(t) == tuple : 
-        if t[0] == '+' : return evalExpr(t[1]) + evalExpr(t[2])
-        if t[0] == '*' : return evalExpr(t[1]) * evalExpr(t[2])
+def evalExpr(t):
+    if type(t) == int: return t
+    if type(t) == str: return names[t] 
+    if type(t) == tuple: 
+        if t[0] == '+':  return evalExpr(t[1]) + evalExpr(t[2])
+        if t[0] == '-':  return evalExpr(t[1]) - evalExpr(t[2])  
+        if t[0] == '/':  return evalExpr(t[1]) / evalExpr(t[2]) 
+        if t[0] == '*':  return evalExpr(t[1]) * evalExpr(t[2])
+        if t[0] == '>':  return evalExpr(t[1]) > evalExpr(t[2])
+        if t[0] == '<':  return evalExpr(t[1]) < evalExpr(t[2])
+        if t[0] == '<=': return evalExpr(t[1]) <= evalExpr(t[2])
+        if t[0] == '==': return evalExpr(t[1]) == evalExpr(t[2])
         
     
 def p_start(p):
@@ -108,30 +125,29 @@ def p_bloc(p):
 def p_statement_expr(p): 
     'statement : PRINT LPAREN expression RPAREN'
     p[0] = ('print', p[3])
-    #print(p[3]) 
+    
     
 def p_statement_assign(p):
     'statement : NAME EGAL expression'
-    #names[p[1]]=p[3]
     p[0] = ('assign', p[1], p[3])
-    #print(p[1], 'a été modifié')
+ 
     
-def p_expression_binop_inf(p): 
-    'expression : expression INF expression' 
-    p[0] = p[1] < p[3] 
-    
-def p_expression_binop_infEGAL(p): 
-    'expression : expression INFEG expression' 
-    p[0] = p[1] <= p[3]
-
 def p_expression_binop_sup(p): 
     'expression : expression SUP expression' 
-    p[0] = p[1] > p[3] 
+    p[0] = ('>', p[1], p[3])  
 
-    
+def p_expression_binop_inf(p): 
+    'expression : expression INF expression' 
+    p[0] = ('<', p[1], p[3])  
+
+def p_expression_binop_infEGAL(p): 
+    'expression : expression INFEG expression' 
+    p[0] = ('<=', p[1], p[3])  
+
 def p_expression_binop_egal(p): 
     'expression : expression EGALEGAL expression' 
-    p[0] = p[1] == p[3] 
+    p[0] = ('==', p[1], p[3])  
+    
     
 def p_expression_binop_and(p): 
     'expression : expression AND expression' 
@@ -143,19 +159,13 @@ def p_expression_binop_or(p):
     
 def p_expression_binop_plus(p): 
     'expression : expression PLUS expression' 
-    #p[0] = p[1] + p[3] 
     p[0] = ('+', p[1], p[3])
     
 def p_expression_binop_times(p): 
     'expression : expression TIMES expression' 
-    #p[0] = p[1] * p[3] 
     p[0] = ('*', p[1], p[3])
     
-def p_expression_binop_divide_and_minus(p): 
-    '''expression : expression MINUS expression 
-     | expression DIVIDE expression''' 
-    if p[2] == '-': p[0] = p[1] - p[3] 
-    else : p[0] = p[1] / p[3] 
+
     
 def p_expression_group(p): 
     'expression : LPAREN expression RPAREN' 
@@ -167,7 +177,6 @@ def p_expression_number(p):
     
 def p_expression_name(p): 
     'expression : NAME' 
-    #p[0] = names[p[1]]
     p[0] = p[1]
 
 def p_expression_if(p):
@@ -179,13 +188,27 @@ def p_expression_if_else(p):
     p[0] = ('if', p[3], p[6], p[10])
 
 
-    
 
+
+
+def p_statement_while(p):
+    'statement : WHILE LPAREN expression RPAREN LACC bloc RACC'
+    p[0] = ('while', p[3], p[6])
+   
+def p_expression_binop_divide_and_minus(p): 
+    '''expression : expression MINUS expression 
+     | expression DIVIDE expression''' 
+    if p[2] == '-': p[0] = ('-', p[1], p[3])  
+    else:           p[0] = ('/', p[1], p[3])   
+
+def p_statement_for(p):
+    'statement : FOR LPAREN statement SEMI expression SEMI statement RPAREN LACC bloc RACC'
+    p[0] = ('for', p[3], p[5], p[7], p[10])
     
     
 def p_error(p):    print("Syntax error in input!")
     
 import ply.yacc as yacc
 yacc.yacc()
-s = 'if(0){print(9);}else{print(2);};print(3);'
+s = 'for(i = 0; i < 5; i = i + 1){ print(i); };'
 yacc.parse(s)
