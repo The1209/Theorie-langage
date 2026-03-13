@@ -1,0 +1,627 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> bloc
+Rule 1     bloc -> bloc statement SEMI
+Rule 2     bloc -> statement SEMI
+Rule 3     statement -> NAME EQUAL expression
+Rule 4     statement -> expression
+Rule 5     expression -> expression PLUS expression
+Rule 6     expression -> expression TIMES expression
+Rule 7     expression -> expression MINUS expression
+Rule 8     expression -> expression DIVIDE expression
+Rule 9     expression -> LPAREN expression RPAREN
+Rule 10    expression -> NUMBER
+Rule 11    expression -> NAME
+Rule 12    expression -> expression AND expression
+Rule 13    expression -> expression OR expression
+
+Terminals, with rules where they appear
+
+AND                  : 12
+DIVIDE               : 8
+EQUAL                : 3
+LPAREN               : 9
+MINUS                : 7
+NAME                 : 3 11
+NUMBER               : 10
+OR                   : 13
+PLUS                 : 5
+RPAREN               : 9
+SEMI                 : 1 2
+TIMES                : 6
+error                : 
+
+Nonterminals, with rules where they appear
+
+bloc                 : 1 0
+expression           : 3 4 5 5 6 6 7 7 8 8 9 12 12 13 13
+statement            : 1 2
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . bloc
+    (1) bloc -> . bloc statement SEMI
+    (2) bloc -> . statement SEMI
+    (3) statement -> . NAME EQUAL expression
+    (4) statement -> . expression
+    (5) expression -> . expression PLUS expression
+    (6) expression -> . expression TIMES expression
+    (7) expression -> . expression MINUS expression
+    (8) expression -> . expression DIVIDE expression
+    (9) expression -> . LPAREN expression RPAREN
+    (10) expression -> . NUMBER
+    (11) expression -> . NAME
+    (12) expression -> . expression AND expression
+    (13) expression -> . expression OR expression
+
+    NAME            shift and go to state 3
+    LPAREN          shift and go to state 5
+    NUMBER          shift and go to state 6
+
+    bloc                           shift and go to state 1
+    statement                      shift and go to state 2
+    expression                     shift and go to state 4
+
+state 1
+
+    (0) S' -> bloc .
+    (1) bloc -> bloc . statement SEMI
+    (3) statement -> . NAME EQUAL expression
+    (4) statement -> . expression
+    (5) expression -> . expression PLUS expression
+    (6) expression -> . expression TIMES expression
+    (7) expression -> . expression MINUS expression
+    (8) expression -> . expression DIVIDE expression
+    (9) expression -> . LPAREN expression RPAREN
+    (10) expression -> . NUMBER
+    (11) expression -> . NAME
+    (12) expression -> . expression AND expression
+    (13) expression -> . expression OR expression
+
+    NAME            shift and go to state 3
+    LPAREN          shift and go to state 5
+    NUMBER          shift and go to state 6
+
+    statement                      shift and go to state 7
+    expression                     shift and go to state 4
+
+state 2
+
+    (2) bloc -> statement . SEMI
+
+    SEMI            shift and go to state 8
+
+
+state 3
+
+    (3) statement -> NAME . EQUAL expression
+    (11) expression -> NAME .
+
+    EQUAL           shift and go to state 9
+    PLUS            reduce using rule 11 (expression -> NAME .)
+    TIMES           reduce using rule 11 (expression -> NAME .)
+    MINUS           reduce using rule 11 (expression -> NAME .)
+    DIVIDE          reduce using rule 11 (expression -> NAME .)
+    AND             reduce using rule 11 (expression -> NAME .)
+    OR              reduce using rule 11 (expression -> NAME .)
+    SEMI            reduce using rule 11 (expression -> NAME .)
+
+
+state 4
+
+    (4) statement -> expression .
+    (5) expression -> expression . PLUS expression
+    (6) expression -> expression . TIMES expression
+    (7) expression -> expression . MINUS expression
+    (8) expression -> expression . DIVIDE expression
+    (12) expression -> expression . AND expression
+    (13) expression -> expression . OR expression
+
+    SEMI            reduce using rule 4 (statement -> expression .)
+    PLUS            shift and go to state 10
+    TIMES           shift and go to state 11
+    MINUS           shift and go to state 12
+    DIVIDE          shift and go to state 13
+    AND             shift and go to state 14
+    OR              shift and go to state 15
+
+
+state 5
+
+    (9) expression -> LPAREN . expression RPAREN
+    (5) expression -> . expression PLUS expression
+    (6) expression -> . expression TIMES expression
+    (7) expression -> . expression MINUS expression
+    (8) expression -> . expression DIVIDE expression
+    (9) expression -> . LPAREN expression RPAREN
+    (10) expression -> . NUMBER
+    (11) expression -> . NAME
+    (12) expression -> . expression AND expression
+    (13) expression -> . expression OR expression
+
+    LPAREN          shift and go to state 5
+    NUMBER          shift and go to state 6
+    NAME            shift and go to state 17
+
+    expression                     shift and go to state 16
+
+state 6
+
+    (10) expression -> NUMBER .
+
+    PLUS            reduce using rule 10 (expression -> NUMBER .)
+    TIMES           reduce using rule 10 (expression -> NUMBER .)
+    MINUS           reduce using rule 10 (expression -> NUMBER .)
+    DIVIDE          reduce using rule 10 (expression -> NUMBER .)
+    AND             reduce using rule 10 (expression -> NUMBER .)
+    OR              reduce using rule 10 (expression -> NUMBER .)
+    SEMI            reduce using rule 10 (expression -> NUMBER .)
+    RPAREN          reduce using rule 10 (expression -> NUMBER .)
+
+
+state 7
+
+    (1) bloc -> bloc statement . SEMI
+
+    SEMI            shift and go to state 18
+
+
+state 8
+
+    (2) bloc -> statement SEMI .
+
+    NAME            reduce using rule 2 (bloc -> statement SEMI .)
+    LPAREN          reduce using rule 2 (bloc -> statement SEMI .)
+    NUMBER          reduce using rule 2 (bloc -> statement SEMI .)
+    $end            reduce using rule 2 (bloc -> statement SEMI .)
+
+
+state 9
+
+    (3) statement -> NAME EQUAL . expression
+    (5) expression -> . expression PLUS expression
+    (6) expression -> . expression TIMES expression
+    (7) expression -> . expression MINUS expression
+    (8) expression -> . expression DIVIDE expression
+    (9) expression -> . LPAREN expression RPAREN
+    (10) expression -> . NUMBER
+    (11) expression -> . NAME
+    (12) expression -> . expression AND expression
+    (13) expression -> . expression OR expression
+
+    LPAREN          shift and go to state 5
+    NUMBER          shift and go to state 6
+    NAME            shift and go to state 17
+
+    expression                     shift and go to state 19
+
+state 10
+
+    (5) expression -> expression PLUS . expression
+    (5) expression -> . expression PLUS expression
+    (6) expression -> . expression TIMES expression
+    (7) expression -> . expression MINUS expression
+    (8) expression -> . expression DIVIDE expression
+    (9) expression -> . LPAREN expression RPAREN
+    (10) expression -> . NUMBER
+    (11) expression -> . NAME
+    (12) expression -> . expression AND expression
+    (13) expression -> . expression OR expression
+
+    LPAREN          shift and go to state 5
+    NUMBER          shift and go to state 6
+    NAME            shift and go to state 17
+
+    expression                     shift and go to state 20
+
+state 11
+
+    (6) expression -> expression TIMES . expression
+    (5) expression -> . expression PLUS expression
+    (6) expression -> . expression TIMES expression
+    (7) expression -> . expression MINUS expression
+    (8) expression -> . expression DIVIDE expression
+    (9) expression -> . LPAREN expression RPAREN
+    (10) expression -> . NUMBER
+    (11) expression -> . NAME
+    (12) expression -> . expression AND expression
+    (13) expression -> . expression OR expression
+
+    LPAREN          shift and go to state 5
+    NUMBER          shift and go to state 6
+    NAME            shift and go to state 17
+
+    expression                     shift and go to state 21
+
+state 12
+
+    (7) expression -> expression MINUS . expression
+    (5) expression -> . expression PLUS expression
+    (6) expression -> . expression TIMES expression
+    (7) expression -> . expression MINUS expression
+    (8) expression -> . expression DIVIDE expression
+    (9) expression -> . LPAREN expression RPAREN
+    (10) expression -> . NUMBER
+    (11) expression -> . NAME
+    (12) expression -> . expression AND expression
+    (13) expression -> . expression OR expression
+
+    LPAREN          shift and go to state 5
+    NUMBER          shift and go to state 6
+    NAME            shift and go to state 17
+
+    expression                     shift and go to state 22
+
+state 13
+
+    (8) expression -> expression DIVIDE . expression
+    (5) expression -> . expression PLUS expression
+    (6) expression -> . expression TIMES expression
+    (7) expression -> . expression MINUS expression
+    (8) expression -> . expression DIVIDE expression
+    (9) expression -> . LPAREN expression RPAREN
+    (10) expression -> . NUMBER
+    (11) expression -> . NAME
+    (12) expression -> . expression AND expression
+    (13) expression -> . expression OR expression
+
+    LPAREN          shift and go to state 5
+    NUMBER          shift and go to state 6
+    NAME            shift and go to state 17
+
+    expression                     shift and go to state 23
+
+state 14
+
+    (12) expression -> expression AND . expression
+    (5) expression -> . expression PLUS expression
+    (6) expression -> . expression TIMES expression
+    (7) expression -> . expression MINUS expression
+    (8) expression -> . expression DIVIDE expression
+    (9) expression -> . LPAREN expression RPAREN
+    (10) expression -> . NUMBER
+    (11) expression -> . NAME
+    (12) expression -> . expression AND expression
+    (13) expression -> . expression OR expression
+
+    LPAREN          shift and go to state 5
+    NUMBER          shift and go to state 6
+    NAME            shift and go to state 17
+
+    expression                     shift and go to state 24
+
+state 15
+
+    (13) expression -> expression OR . expression
+    (5) expression -> . expression PLUS expression
+    (6) expression -> . expression TIMES expression
+    (7) expression -> . expression MINUS expression
+    (8) expression -> . expression DIVIDE expression
+    (9) expression -> . LPAREN expression RPAREN
+    (10) expression -> . NUMBER
+    (11) expression -> . NAME
+    (12) expression -> . expression AND expression
+    (13) expression -> . expression OR expression
+
+    LPAREN          shift and go to state 5
+    NUMBER          shift and go to state 6
+    NAME            shift and go to state 17
+
+    expression                     shift and go to state 25
+
+state 16
+
+    (9) expression -> LPAREN expression . RPAREN
+    (5) expression -> expression . PLUS expression
+    (6) expression -> expression . TIMES expression
+    (7) expression -> expression . MINUS expression
+    (8) expression -> expression . DIVIDE expression
+    (12) expression -> expression . AND expression
+    (13) expression -> expression . OR expression
+
+    RPAREN          shift and go to state 26
+    PLUS            shift and go to state 10
+    TIMES           shift and go to state 11
+    MINUS           shift and go to state 12
+    DIVIDE          shift and go to state 13
+    AND             shift and go to state 14
+    OR              shift and go to state 15
+
+
+state 17
+
+    (11) expression -> NAME .
+
+    RPAREN          reduce using rule 11 (expression -> NAME .)
+    PLUS            reduce using rule 11 (expression -> NAME .)
+    TIMES           reduce using rule 11 (expression -> NAME .)
+    MINUS           reduce using rule 11 (expression -> NAME .)
+    DIVIDE          reduce using rule 11 (expression -> NAME .)
+    AND             reduce using rule 11 (expression -> NAME .)
+    OR              reduce using rule 11 (expression -> NAME .)
+    SEMI            reduce using rule 11 (expression -> NAME .)
+
+
+state 18
+
+    (1) bloc -> bloc statement SEMI .
+
+    NAME            reduce using rule 1 (bloc -> bloc statement SEMI .)
+    LPAREN          reduce using rule 1 (bloc -> bloc statement SEMI .)
+    NUMBER          reduce using rule 1 (bloc -> bloc statement SEMI .)
+    $end            reduce using rule 1 (bloc -> bloc statement SEMI .)
+
+
+state 19
+
+    (3) statement -> NAME EQUAL expression .
+    (5) expression -> expression . PLUS expression
+    (6) expression -> expression . TIMES expression
+    (7) expression -> expression . MINUS expression
+    (8) expression -> expression . DIVIDE expression
+    (12) expression -> expression . AND expression
+    (13) expression -> expression . OR expression
+
+    SEMI            reduce using rule 3 (statement -> NAME EQUAL expression .)
+    PLUS            shift and go to state 10
+    TIMES           shift and go to state 11
+    MINUS           shift and go to state 12
+    DIVIDE          shift and go to state 13
+    AND             shift and go to state 14
+    OR              shift and go to state 15
+
+
+state 20
+
+    (5) expression -> expression PLUS expression .
+    (5) expression -> expression . PLUS expression
+    (6) expression -> expression . TIMES expression
+    (7) expression -> expression . MINUS expression
+    (8) expression -> expression . DIVIDE expression
+    (12) expression -> expression . AND expression
+    (13) expression -> expression . OR expression
+
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for TIMES resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+  ! shift/reduce conflict for DIVIDE resolved as shift
+  ! shift/reduce conflict for AND resolved as shift
+  ! shift/reduce conflict for OR resolved as shift
+    SEMI            reduce using rule 5 (expression -> expression PLUS expression .)
+    RPAREN          reduce using rule 5 (expression -> expression PLUS expression .)
+    PLUS            shift and go to state 10
+    TIMES           shift and go to state 11
+    MINUS           shift and go to state 12
+    DIVIDE          shift and go to state 13
+    AND             shift and go to state 14
+    OR              shift and go to state 15
+
+  ! PLUS            [ reduce using rule 5 (expression -> expression PLUS expression .) ]
+  ! TIMES           [ reduce using rule 5 (expression -> expression PLUS expression .) ]
+  ! MINUS           [ reduce using rule 5 (expression -> expression PLUS expression .) ]
+  ! DIVIDE          [ reduce using rule 5 (expression -> expression PLUS expression .) ]
+  ! AND             [ reduce using rule 5 (expression -> expression PLUS expression .) ]
+  ! OR              [ reduce using rule 5 (expression -> expression PLUS expression .) ]
+
+
+state 21
+
+    (6) expression -> expression TIMES expression .
+    (5) expression -> expression . PLUS expression
+    (6) expression -> expression . TIMES expression
+    (7) expression -> expression . MINUS expression
+    (8) expression -> expression . DIVIDE expression
+    (12) expression -> expression . AND expression
+    (13) expression -> expression . OR expression
+
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for TIMES resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+  ! shift/reduce conflict for DIVIDE resolved as shift
+  ! shift/reduce conflict for AND resolved as shift
+  ! shift/reduce conflict for OR resolved as shift
+    SEMI            reduce using rule 6 (expression -> expression TIMES expression .)
+    RPAREN          reduce using rule 6 (expression -> expression TIMES expression .)
+    PLUS            shift and go to state 10
+    TIMES           shift and go to state 11
+    MINUS           shift and go to state 12
+    DIVIDE          shift and go to state 13
+    AND             shift and go to state 14
+    OR              shift and go to state 15
+
+  ! PLUS            [ reduce using rule 6 (expression -> expression TIMES expression .) ]
+  ! TIMES           [ reduce using rule 6 (expression -> expression TIMES expression .) ]
+  ! MINUS           [ reduce using rule 6 (expression -> expression TIMES expression .) ]
+  ! DIVIDE          [ reduce using rule 6 (expression -> expression TIMES expression .) ]
+  ! AND             [ reduce using rule 6 (expression -> expression TIMES expression .) ]
+  ! OR              [ reduce using rule 6 (expression -> expression TIMES expression .) ]
+
+
+state 22
+
+    (7) expression -> expression MINUS expression .
+    (5) expression -> expression . PLUS expression
+    (6) expression -> expression . TIMES expression
+    (7) expression -> expression . MINUS expression
+    (8) expression -> expression . DIVIDE expression
+    (12) expression -> expression . AND expression
+    (13) expression -> expression . OR expression
+
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for TIMES resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+  ! shift/reduce conflict for DIVIDE resolved as shift
+  ! shift/reduce conflict for AND resolved as shift
+  ! shift/reduce conflict for OR resolved as shift
+    SEMI            reduce using rule 7 (expression -> expression MINUS expression .)
+    RPAREN          reduce using rule 7 (expression -> expression MINUS expression .)
+    PLUS            shift and go to state 10
+    TIMES           shift and go to state 11
+    MINUS           shift and go to state 12
+    DIVIDE          shift and go to state 13
+    AND             shift and go to state 14
+    OR              shift and go to state 15
+
+  ! PLUS            [ reduce using rule 7 (expression -> expression MINUS expression .) ]
+  ! TIMES           [ reduce using rule 7 (expression -> expression MINUS expression .) ]
+  ! MINUS           [ reduce using rule 7 (expression -> expression MINUS expression .) ]
+  ! DIVIDE          [ reduce using rule 7 (expression -> expression MINUS expression .) ]
+  ! AND             [ reduce using rule 7 (expression -> expression MINUS expression .) ]
+  ! OR              [ reduce using rule 7 (expression -> expression MINUS expression .) ]
+
+
+state 23
+
+    (8) expression -> expression DIVIDE expression .
+    (5) expression -> expression . PLUS expression
+    (6) expression -> expression . TIMES expression
+    (7) expression -> expression . MINUS expression
+    (8) expression -> expression . DIVIDE expression
+    (12) expression -> expression . AND expression
+    (13) expression -> expression . OR expression
+
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for TIMES resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+  ! shift/reduce conflict for DIVIDE resolved as shift
+  ! shift/reduce conflict for AND resolved as shift
+  ! shift/reduce conflict for OR resolved as shift
+    SEMI            reduce using rule 8 (expression -> expression DIVIDE expression .)
+    RPAREN          reduce using rule 8 (expression -> expression DIVIDE expression .)
+    PLUS            shift and go to state 10
+    TIMES           shift and go to state 11
+    MINUS           shift and go to state 12
+    DIVIDE          shift and go to state 13
+    AND             shift and go to state 14
+    OR              shift and go to state 15
+
+  ! PLUS            [ reduce using rule 8 (expression -> expression DIVIDE expression .) ]
+  ! TIMES           [ reduce using rule 8 (expression -> expression DIVIDE expression .) ]
+  ! MINUS           [ reduce using rule 8 (expression -> expression DIVIDE expression .) ]
+  ! DIVIDE          [ reduce using rule 8 (expression -> expression DIVIDE expression .) ]
+  ! AND             [ reduce using rule 8 (expression -> expression DIVIDE expression .) ]
+  ! OR              [ reduce using rule 8 (expression -> expression DIVIDE expression .) ]
+
+
+state 24
+
+    (12) expression -> expression AND expression .
+    (5) expression -> expression . PLUS expression
+    (6) expression -> expression . TIMES expression
+    (7) expression -> expression . MINUS expression
+    (8) expression -> expression . DIVIDE expression
+    (12) expression -> expression . AND expression
+    (13) expression -> expression . OR expression
+
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for TIMES resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+  ! shift/reduce conflict for DIVIDE resolved as shift
+  ! shift/reduce conflict for AND resolved as shift
+  ! shift/reduce conflict for OR resolved as shift
+    SEMI            reduce using rule 12 (expression -> expression AND expression .)
+    RPAREN          reduce using rule 12 (expression -> expression AND expression .)
+    PLUS            shift and go to state 10
+    TIMES           shift and go to state 11
+    MINUS           shift and go to state 12
+    DIVIDE          shift and go to state 13
+    AND             shift and go to state 14
+    OR              shift and go to state 15
+
+  ! PLUS            [ reduce using rule 12 (expression -> expression AND expression .) ]
+  ! TIMES           [ reduce using rule 12 (expression -> expression AND expression .) ]
+  ! MINUS           [ reduce using rule 12 (expression -> expression AND expression .) ]
+  ! DIVIDE          [ reduce using rule 12 (expression -> expression AND expression .) ]
+  ! AND             [ reduce using rule 12 (expression -> expression AND expression .) ]
+  ! OR              [ reduce using rule 12 (expression -> expression AND expression .) ]
+
+
+state 25
+
+    (13) expression -> expression OR expression .
+    (5) expression -> expression . PLUS expression
+    (6) expression -> expression . TIMES expression
+    (7) expression -> expression . MINUS expression
+    (8) expression -> expression . DIVIDE expression
+    (12) expression -> expression . AND expression
+    (13) expression -> expression . OR expression
+
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for TIMES resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+  ! shift/reduce conflict for DIVIDE resolved as shift
+  ! shift/reduce conflict for AND resolved as shift
+  ! shift/reduce conflict for OR resolved as shift
+    SEMI            reduce using rule 13 (expression -> expression OR expression .)
+    RPAREN          reduce using rule 13 (expression -> expression OR expression .)
+    PLUS            shift and go to state 10
+    TIMES           shift and go to state 11
+    MINUS           shift and go to state 12
+    DIVIDE          shift and go to state 13
+    AND             shift and go to state 14
+    OR              shift and go to state 15
+
+  ! PLUS            [ reduce using rule 13 (expression -> expression OR expression .) ]
+  ! TIMES           [ reduce using rule 13 (expression -> expression OR expression .) ]
+  ! MINUS           [ reduce using rule 13 (expression -> expression OR expression .) ]
+  ! DIVIDE          [ reduce using rule 13 (expression -> expression OR expression .) ]
+  ! AND             [ reduce using rule 13 (expression -> expression OR expression .) ]
+  ! OR              [ reduce using rule 13 (expression -> expression OR expression .) ]
+
+
+state 26
+
+    (9) expression -> LPAREN expression RPAREN .
+
+    PLUS            reduce using rule 9 (expression -> LPAREN expression RPAREN .)
+    TIMES           reduce using rule 9 (expression -> LPAREN expression RPAREN .)
+    MINUS           reduce using rule 9 (expression -> LPAREN expression RPAREN .)
+    DIVIDE          reduce using rule 9 (expression -> LPAREN expression RPAREN .)
+    AND             reduce using rule 9 (expression -> LPAREN expression RPAREN .)
+    OR              reduce using rule 9 (expression -> LPAREN expression RPAREN .)
+    SEMI            reduce using rule 9 (expression -> LPAREN expression RPAREN .)
+    RPAREN          reduce using rule 9 (expression -> LPAREN expression RPAREN .)
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for PLUS in state 20 resolved as shift
+WARNING: shift/reduce conflict for TIMES in state 20 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 20 resolved as shift
+WARNING: shift/reduce conflict for DIVIDE in state 20 resolved as shift
+WARNING: shift/reduce conflict for AND in state 20 resolved as shift
+WARNING: shift/reduce conflict for OR in state 20 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 21 resolved as shift
+WARNING: shift/reduce conflict for TIMES in state 21 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 21 resolved as shift
+WARNING: shift/reduce conflict for DIVIDE in state 21 resolved as shift
+WARNING: shift/reduce conflict for AND in state 21 resolved as shift
+WARNING: shift/reduce conflict for OR in state 21 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 22 resolved as shift
+WARNING: shift/reduce conflict for TIMES in state 22 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 22 resolved as shift
+WARNING: shift/reduce conflict for DIVIDE in state 22 resolved as shift
+WARNING: shift/reduce conflict for AND in state 22 resolved as shift
+WARNING: shift/reduce conflict for OR in state 22 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 23 resolved as shift
+WARNING: shift/reduce conflict for TIMES in state 23 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 23 resolved as shift
+WARNING: shift/reduce conflict for DIVIDE in state 23 resolved as shift
+WARNING: shift/reduce conflict for AND in state 23 resolved as shift
+WARNING: shift/reduce conflict for OR in state 23 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 24 resolved as shift
+WARNING: shift/reduce conflict for TIMES in state 24 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 24 resolved as shift
+WARNING: shift/reduce conflict for DIVIDE in state 24 resolved as shift
+WARNING: shift/reduce conflict for AND in state 24 resolved as shift
+WARNING: shift/reduce conflict for OR in state 24 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 25 resolved as shift
+WARNING: shift/reduce conflict for TIMES in state 25 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 25 resolved as shift
+WARNING: shift/reduce conflict for DIVIDE in state 25 resolved as shift
+WARNING: shift/reduce conflict for AND in state 25 resolved as shift
+WARNING: shift/reduce conflict for OR in state 25 resolved as shift
