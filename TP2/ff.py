@@ -10,7 +10,8 @@ reserved={
         'while': 'WHILE',
         'for': 'FOR',
         'def': 'DEF',
-        'return': 'RETURN'
+        'return': 'RETURN',   
+        'eval':'EVAL'
         }
 
 
@@ -95,6 +96,10 @@ def evalInst(t):
     elif t[0] == 'while':              
         while evalExpr(t[1]):
             evalInst(t[2])
+    
+    elif t[0] == 'eval':
+        evalExpr(t[1])
+
     elif t[0] == 'for':                
         evalInst(t[1]) 
         while evalExpr(t[2]):
@@ -106,7 +111,7 @@ def evalInst(t):
        
         functions[t[1]] = (t[2], t[3])
     elif t[0] == 'return':
-      
+    
         raise ReturnException(evalExpr(t[1]))
 
 def evalExpr(t):
@@ -121,6 +126,7 @@ def evalExpr(t):
         if t[0] == '<':  return evalExpr(t[1]) < evalExpr(t[2])
         if t[0] == '<=': return evalExpr(t[1]) <= evalExpr(t[2])
         if t[0] == '==': return evalExpr(t[1]) == evalExpr(t[2])
+        if t[0] == 'eval': return evalExpr(evalExpr(t[1]))
         if t[0] == 'call':
             # appel de fonction : on évalue les arguments
             params, body = functions[t[1]]
@@ -271,6 +277,13 @@ def p_empty(p):
     'empty :'
     pass
 
+
+def p_expression_eval(p):
+    'expression : EVAL LPAREN expression RPAREN'
+    p[0] = ('eval', p[3])
+
+
+
 def p_error(p):    print("Syntax error in input!")
     
 import ply.yacc as yacc
@@ -279,9 +292,9 @@ yacc.yacc()
 
 #  boucle for simple
 
- s = 'for(i = 0; i < 5; i = i + 1){ print(i); };'
+s = 'print(eval(55 + 5));'
 
-
+yacc.parse(s)
 #  affectation + print
 
 # s = '''
