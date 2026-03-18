@@ -11,13 +11,14 @@ reserved={
         'for': 'FOR',
         'def': 'DEF',
         'return': 'RETURN',   
-        'eval':'EVAL'
+        'eval':'EVAL',
+        'exec':'EXEC'
         }
 
 
 tokens = [ 'NUMBER','MINUS', 'PLUS','TIMES','DIVIDE', 'LPAREN',
           'RPAREN', 'OR', 'AND', 'SEMI', 'EGAL', 'NAME', 'INF', 'SUP',
-          'EGALEGAL','INFEG', 'LACC','RACC', 'COMMA']+ list(reserved.values())
+          'EGALEGAL','INFEG', 'LACC','RACC', 'COMMA', 'STRING']+ list(reserved.values())
 
 t_PLUS = r'\+' 
 t_MINUS = r'-' 
@@ -38,9 +39,15 @@ t_LACC = r'\{'
 t_RACC = r'\}'
 t_COMMA = r','
 
+
 def t_NAME(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
     t.type = reserved.get(t.value,'NAME')
+    return t
+
+def t_STRING(t):
+    r'\"[^\"]*\"'
+    t.value = t.value[1:-1] 
     return t
 
 def t_NUMBER(t): 
@@ -100,6 +107,10 @@ def evalInst(t):
     elif t[0] == 'eval':
         evalExpr(t[1])
 
+    elif t[0] == 'exec':
+        code = evalExpr(t[1])
+        yacc.parse(code)     
+
     elif t[0] == 'for':                
         evalInst(t[1]) 
         while evalExpr(t[2]):
@@ -127,6 +138,7 @@ def evalExpr(t):
         if t[0] == '<=': return evalExpr(t[1]) <= evalExpr(t[2])
         if t[0] == '==': return evalExpr(t[1]) == evalExpr(t[2])
         if t[0] == 'eval': return evalExpr(evalExpr(t[1]))
+        if t[0] == 'string': return t[1]
         if t[0] == 'call':
             # appel de fonction : on évalue les arguments
             params, body = functions[t[1]]
@@ -231,8 +243,6 @@ def p_statement_for(p):
     'statement : FOR LPAREN statement SEMI expression SEMI statement RPAREN LACC bloc RACC'
     p[0] = ('for', p[3], p[5], p[7], p[10])
 
-
-
 def p_statement_def(p):
     'statement : DEF NAME LPAREN param_list RPAREN LACC bloc RACC'
     p[0] = ('def', p[2], p[4], p[7])
@@ -248,14 +258,9 @@ def p_param_list_single(p):
 def p_param_list_empty(p):
     'param_list : empty'
     p[0] = []
-
-
-
 def p_statement_return(p):
     'statement : RETURN expression'
     p[0] = ('return', p[2])
-
-
 
 def p_expression_call(p):
     'expression : NAME LPAREN arg_list RPAREN'
@@ -277,24 +282,36 @@ def p_empty(p):
     'empty :'
     pass
 
-
+##################################################################
 def p_expression_eval(p):
     'expression : EVAL LPAREN expression RPAREN'
     p[0] = ('eval', p[3])
+def p_expression_string(p):
+    'expression : STRING'
+    p[0] = ('string', p[1])
+def p_statement_exec(p):
+    'statement : EXEC LPAREN expression RPAREN'
+    p[0] = ('exec', p[3])
+##################################################################
 
 
-
-def p_error(p):    print("Syntax error in input!")
+def p_error(p):    
+    print("Syntax error in input!")
     
 import ply.yacc as yacc
 yacc.yacc()
 
 
-#  boucle for simple
 
-s = 'print(eval(55 + 5));'
 
+s = 'code = "for(i = 0; i < 5; i = i + 1){ print(i); };"; exec(code);'
 yacc.parse(s)
+
+
+# Exe()
+#s = 'code = "for(i = 0; i < 5; i = i + 1){ print(i); };"; exec(code);'
+
+
 #  affectation + print
 
 # s = '''
@@ -419,4 +436,3 @@ yacc.parse(s)
 #print(add(10,20));
 #'''
 
-yacc.parse(s)
