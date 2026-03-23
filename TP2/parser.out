@@ -35,6 +35,9 @@ Rule 29    arg_list -> arg_list COMMA expression
 Rule 30    arg_list -> expression
 Rule 31    arg_list -> empty
 Rule 32    empty -> <empty>
+Rule 33    expression -> EVAL LPAREN expression RPAREN
+Rule 34    expression -> STRING
+Rule 35    statement -> EXEC LPAREN expression RPAREN
 
 Terminals, with rules where they appear
 
@@ -45,12 +48,14 @@ DIVIDE               : 21
 EGAL                 : 5
 EGALEGAL             : 9
 ELSE                 : 18
+EVAL                 : 33
+EXEC                 : 35
 FOR                  : 22
 IF                   : 17 18
 INF                  : 7
 INFEG                : 8
 LACC                 : 17 18 18 19 22 23
-LPAREN               : 4 14 17 18 19 22 23 28
+LPAREN               : 4 14 17 18 19 22 23 28 33 35
 MINUS                : 20
 NAME                 : 5 16 23 24 25 28
 NUMBER               : 15
@@ -59,8 +64,9 @@ PLUS                 : 12
 PRINT                : 4
 RACC                 : 17 18 18 19 22 23
 RETURN               : 27
-RPAREN               : 4 14 17 18 19 22 23 28
+RPAREN               : 4 14 17 18 19 22 23 28 33 35
 SEMI                 : 2 3 22 22
+STRING               : 34
 SUP                  : 6
 TIMES                : 13
 WHILE                : 19
@@ -71,7 +77,7 @@ Nonterminals, with rules where they appear
 arg_list             : 28 29
 bloc                 : 1 2 17 18 18 19 22 23
 empty                : 26 31
-expression           : 4 5 6 6 7 7 8 8 9 9 10 10 11 11 12 12 13 13 14 17 18 19 20 20 21 21 22 27 29 30
+expression           : 4 5 6 6 7 7 8 8 9 9 10 10 11 11 12 12 13 13 14 17 18 19 20 20 21 21 22 27 29 30 33 35
 param_list           : 23 24
 start                : 0
 statement            : 2 3 22 22
@@ -92,6 +98,7 @@ state 0
     (22) statement -> . FOR LPAREN statement SEMI expression SEMI statement RPAREN LACC bloc RACC
     (23) statement -> . DEF NAME LPAREN param_list RPAREN LACC bloc RACC
     (27) statement -> . RETURN expression
+    (35) statement -> . EXEC LPAREN expression RPAREN
 
     PRINT           shift and go to state 4
     NAME            shift and go to state 5
@@ -100,6 +107,7 @@ state 0
     FOR             shift and go to state 8
     DEF             shift and go to state 9
     RETURN          shift and go to state 10
+    EXEC            shift and go to state 11
 
     start                          shift and go to state 1
     bloc                           shift and go to state 2
@@ -123,6 +131,7 @@ state 2
     (22) statement -> . FOR LPAREN statement SEMI expression SEMI statement RPAREN LACC bloc RACC
     (23) statement -> . DEF NAME LPAREN param_list RPAREN LACC bloc RACC
     (27) statement -> . RETURN expression
+    (35) statement -> . EXEC LPAREN expression RPAREN
 
     $end            reduce using rule 1 (start -> bloc .)
     PRINT           shift and go to state 4
@@ -132,28 +141,29 @@ state 2
     FOR             shift and go to state 8
     DEF             shift and go to state 9
     RETURN          shift and go to state 10
+    EXEC            shift and go to state 11
 
-    statement                      shift and go to state 11
+    statement                      shift and go to state 12
 
 state 3
 
     (3) bloc -> statement . SEMI
 
-    SEMI            shift and go to state 12
+    SEMI            shift and go to state 13
 
 
 state 4
 
     (4) statement -> PRINT . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 13
+    LPAREN          shift and go to state 14
 
 
 state 5
 
     (5) statement -> NAME . EGAL expression
 
-    EGAL            shift and go to state 14
+    EGAL            shift and go to state 15
 
 
 state 6
@@ -161,28 +171,28 @@ state 6
     (17) statement -> IF . LPAREN expression RPAREN LACC bloc RACC
     (18) statement -> IF . LPAREN expression RPAREN LACC bloc RACC ELSE LACC bloc RACC
 
-    LPAREN          shift and go to state 15
+    LPAREN          shift and go to state 16
 
 
 state 7
 
     (19) statement -> WHILE . LPAREN expression RPAREN LACC bloc RACC
 
-    LPAREN          shift and go to state 16
+    LPAREN          shift and go to state 17
 
 
 state 8
 
     (22) statement -> FOR . LPAREN statement SEMI expression SEMI statement RPAREN LACC bloc RACC
 
-    LPAREN          shift and go to state 17
+    LPAREN          shift and go to state 18
 
 
 state 9
 
     (23) statement -> DEF . NAME LPAREN param_list RPAREN LACC bloc RACC
 
-    NAME            shift and go to state 18
+    NAME            shift and go to state 19
 
 
 state 10
@@ -202,21 +212,32 @@ state 10
     (20) expression -> . expression MINUS expression
     (21) expression -> . expression DIVIDE expression
     (28) expression -> . NAME LPAREN arg_list RPAREN
+    (33) expression -> . EVAL LPAREN expression RPAREN
+    (34) expression -> . STRING
 
-    LPAREN          shift and go to state 20
-    NUMBER          shift and go to state 21
-    NAME            shift and go to state 22
+    LPAREN          shift and go to state 21
+    NUMBER          shift and go to state 22
+    NAME            shift and go to state 23
+    EVAL            shift and go to state 24
+    STRING          shift and go to state 25
 
-    expression                     shift and go to state 19
+    expression                     shift and go to state 20
 
 state 11
 
-    (2) bloc -> bloc statement . SEMI
+    (35) statement -> EXEC . LPAREN expression RPAREN
 
-    SEMI            shift and go to state 23
+    LPAREN          shift and go to state 26
 
 
 state 12
+
+    (2) bloc -> bloc statement . SEMI
+
+    SEMI            shift and go to state 27
+
+
+state 13
 
     (3) bloc -> statement SEMI .
 
@@ -227,11 +248,12 @@ state 12
     FOR             reduce using rule 3 (bloc -> statement SEMI .)
     DEF             reduce using rule 3 (bloc -> statement SEMI .)
     RETURN          reduce using rule 3 (bloc -> statement SEMI .)
+    EXEC            reduce using rule 3 (bloc -> statement SEMI .)
     $end            reduce using rule 3 (bloc -> statement SEMI .)
     RACC            reduce using rule 3 (bloc -> statement SEMI .)
 
 
-state 13
+state 14
 
     (4) statement -> PRINT LPAREN . expression RPAREN
     (6) expression -> . expression SUP expression
@@ -248,14 +270,18 @@ state 13
     (20) expression -> . expression MINUS expression
     (21) expression -> . expression DIVIDE expression
     (28) expression -> . NAME LPAREN arg_list RPAREN
+    (33) expression -> . EVAL LPAREN expression RPAREN
+    (34) expression -> . STRING
 
-    LPAREN          shift and go to state 20
-    NUMBER          shift and go to state 21
-    NAME            shift and go to state 22
+    LPAREN          shift and go to state 21
+    NUMBER          shift and go to state 22
+    NAME            shift and go to state 23
+    EVAL            shift and go to state 24
+    STRING          shift and go to state 25
 
-    expression                     shift and go to state 24
+    expression                     shift and go to state 28
 
-state 14
+state 15
 
     (5) statement -> NAME EGAL . expression
     (6) expression -> . expression SUP expression
@@ -272,14 +298,18 @@ state 14
     (20) expression -> . expression MINUS expression
     (21) expression -> . expression DIVIDE expression
     (28) expression -> . NAME LPAREN arg_list RPAREN
+    (33) expression -> . EVAL LPAREN expression RPAREN
+    (34) expression -> . STRING
 
-    LPAREN          shift and go to state 20
-    NUMBER          shift and go to state 21
-    NAME            shift and go to state 22
+    LPAREN          shift and go to state 21
+    NUMBER          shift and go to state 22
+    NAME            shift and go to state 23
+    EVAL            shift and go to state 24
+    STRING          shift and go to state 25
 
-    expression                     shift and go to state 25
+    expression                     shift and go to state 29
 
-state 15
+state 16
 
     (17) statement -> IF LPAREN . expression RPAREN LACC bloc RACC
     (18) statement -> IF LPAREN . expression RPAREN LACC bloc RACC ELSE LACC bloc RACC
@@ -297,14 +327,18 @@ state 15
     (20) expression -> . expression MINUS expression
     (21) expression -> . expression DIVIDE expression
     (28) expression -> . NAME LPAREN arg_list RPAREN
+    (33) expression -> . EVAL LPAREN expression RPAREN
+    (34) expression -> . STRING
 
-    LPAREN          shift and go to state 20
-    NUMBER          shift and go to state 21
-    NAME            shift and go to state 22
+    LPAREN          shift and go to state 21
+    NUMBER          shift and go to state 22
+    NAME            shift and go to state 23
+    EVAL            shift and go to state 24
+    STRING          shift and go to state 25
 
-    expression                     shift and go to state 26
+    expression                     shift and go to state 30
 
-state 16
+state 17
 
     (19) statement -> WHILE LPAREN . expression RPAREN LACC bloc RACC
     (6) expression -> . expression SUP expression
@@ -321,14 +355,18 @@ state 16
     (20) expression -> . expression MINUS expression
     (21) expression -> . expression DIVIDE expression
     (28) expression -> . NAME LPAREN arg_list RPAREN
+    (33) expression -> . EVAL LPAREN expression RPAREN
+    (34) expression -> . STRING
 
-    LPAREN          shift and go to state 20
-    NUMBER          shift and go to state 21
-    NAME            shift and go to state 22
+    LPAREN          shift and go to state 21
+    NUMBER          shift and go to state 22
+    NAME            shift and go to state 23
+    EVAL            shift and go to state 24
+    STRING          shift and go to state 25
 
-    expression                     shift and go to state 27
+    expression                     shift and go to state 31
 
-state 17
+state 18
 
     (22) statement -> FOR LPAREN . statement SEMI expression SEMI statement RPAREN LACC bloc RACC
     (4) statement -> . PRINT LPAREN expression RPAREN
@@ -339,6 +377,7 @@ state 17
     (22) statement -> . FOR LPAREN statement SEMI expression SEMI statement RPAREN LACC bloc RACC
     (23) statement -> . DEF NAME LPAREN param_list RPAREN LACC bloc RACC
     (27) statement -> . RETURN expression
+    (35) statement -> . EXEC LPAREN expression RPAREN
 
     PRINT           shift and go to state 4
     NAME            shift and go to state 5
@@ -347,17 +386,18 @@ state 17
     FOR             shift and go to state 8
     DEF             shift and go to state 9
     RETURN          shift and go to state 10
+    EXEC            shift and go to state 11
 
-    statement                      shift and go to state 28
+    statement                      shift and go to state 32
 
-state 18
+state 19
 
     (23) statement -> DEF NAME . LPAREN param_list RPAREN LACC bloc RACC
 
-    LPAREN          shift and go to state 29
+    LPAREN          shift and go to state 33
 
 
-state 19
+state 20
 
     (27) statement -> RETURN expression .
     (6) expression -> expression . SUP expression
@@ -373,19 +413,19 @@ state 19
 
     SEMI            reduce using rule 27 (statement -> RETURN expression .)
     RPAREN          reduce using rule 27 (statement -> RETURN expression .)
-    SUP             shift and go to state 30
-    INF             shift and go to state 31
-    INFEG           shift and go to state 32
-    EGALEGAL        shift and go to state 33
-    AND             shift and go to state 34
-    OR              shift and go to state 35
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
-    MINUS           shift and go to state 38
-    DIVIDE          shift and go to state 39
+    SUP             shift and go to state 34
+    INF             shift and go to state 35
+    INFEG           shift and go to state 36
+    EGALEGAL        shift and go to state 37
+    AND             shift and go to state 38
+    OR              shift and go to state 39
+    PLUS            shift and go to state 40
+    TIMES           shift and go to state 41
+    MINUS           shift and go to state 42
+    DIVIDE          shift and go to state 43
 
 
-state 20
+state 21
 
     (14) expression -> LPAREN . expression RPAREN
     (6) expression -> . expression SUP expression
@@ -402,14 +442,18 @@ state 20
     (20) expression -> . expression MINUS expression
     (21) expression -> . expression DIVIDE expression
     (28) expression -> . NAME LPAREN arg_list RPAREN
+    (33) expression -> . EVAL LPAREN expression RPAREN
+    (34) expression -> . STRING
 
-    LPAREN          shift and go to state 20
-    NUMBER          shift and go to state 21
-    NAME            shift and go to state 22
+    LPAREN          shift and go to state 21
+    NUMBER          shift and go to state 22
+    NAME            shift and go to state 23
+    EVAL            shift and go to state 24
+    STRING          shift and go to state 25
 
-    expression                     shift and go to state 40
+    expression                     shift and go to state 44
 
-state 21
+state 22
 
     (15) expression -> NUMBER .
 
@@ -428,7 +472,7 @@ state 21
     COMMA           reduce using rule 15 (expression -> NUMBER .)
 
 
-state 22
+state 23
 
     (16) expression -> NAME .
     (28) expression -> NAME . LPAREN arg_list RPAREN
@@ -446,10 +490,64 @@ state 22
     SEMI            reduce using rule 16 (expression -> NAME .)
     RPAREN          reduce using rule 16 (expression -> NAME .)
     COMMA           reduce using rule 16 (expression -> NAME .)
-    LPAREN          shift and go to state 41
+    LPAREN          shift and go to state 45
 
 
-state 23
+state 24
+
+    (33) expression -> EVAL . LPAREN expression RPAREN
+
+    LPAREN          shift and go to state 46
+
+
+state 25
+
+    (34) expression -> STRING .
+
+    SUP             reduce using rule 34 (expression -> STRING .)
+    INF             reduce using rule 34 (expression -> STRING .)
+    INFEG           reduce using rule 34 (expression -> STRING .)
+    EGALEGAL        reduce using rule 34 (expression -> STRING .)
+    AND             reduce using rule 34 (expression -> STRING .)
+    OR              reduce using rule 34 (expression -> STRING .)
+    PLUS            reduce using rule 34 (expression -> STRING .)
+    TIMES           reduce using rule 34 (expression -> STRING .)
+    MINUS           reduce using rule 34 (expression -> STRING .)
+    DIVIDE          reduce using rule 34 (expression -> STRING .)
+    SEMI            reduce using rule 34 (expression -> STRING .)
+    RPAREN          reduce using rule 34 (expression -> STRING .)
+    COMMA           reduce using rule 34 (expression -> STRING .)
+
+
+state 26
+
+    (35) statement -> EXEC LPAREN . expression RPAREN
+    (6) expression -> . expression SUP expression
+    (7) expression -> . expression INF expression
+    (8) expression -> . expression INFEG expression
+    (9) expression -> . expression EGALEGAL expression
+    (10) expression -> . expression AND expression
+    (11) expression -> . expression OR expression
+    (12) expression -> . expression PLUS expression
+    (13) expression -> . expression TIMES expression
+    (14) expression -> . LPAREN expression RPAREN
+    (15) expression -> . NUMBER
+    (16) expression -> . NAME
+    (20) expression -> . expression MINUS expression
+    (21) expression -> . expression DIVIDE expression
+    (28) expression -> . NAME LPAREN arg_list RPAREN
+    (33) expression -> . EVAL LPAREN expression RPAREN
+    (34) expression -> . STRING
+
+    LPAREN          shift and go to state 21
+    NUMBER          shift and go to state 22
+    NAME            shift and go to state 23
+    EVAL            shift and go to state 24
+    STRING          shift and go to state 25
+
+    expression                     shift and go to state 47
+
+state 27
 
     (2) bloc -> bloc statement SEMI .
 
@@ -460,11 +558,12 @@ state 23
     FOR             reduce using rule 2 (bloc -> bloc statement SEMI .)
     DEF             reduce using rule 2 (bloc -> bloc statement SEMI .)
     RETURN          reduce using rule 2 (bloc -> bloc statement SEMI .)
+    EXEC            reduce using rule 2 (bloc -> bloc statement SEMI .)
     $end            reduce using rule 2 (bloc -> bloc statement SEMI .)
     RACC            reduce using rule 2 (bloc -> bloc statement SEMI .)
 
 
-state 24
+state 28
 
     (4) statement -> PRINT LPAREN expression . RPAREN
     (6) expression -> expression . SUP expression
@@ -478,20 +577,20 @@ state 24
     (20) expression -> expression . MINUS expression
     (21) expression -> expression . DIVIDE expression
 
-    RPAREN          shift and go to state 42
-    SUP             shift and go to state 30
-    INF             shift and go to state 31
-    INFEG           shift and go to state 32
-    EGALEGAL        shift and go to state 33
-    AND             shift and go to state 34
-    OR              shift and go to state 35
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
-    MINUS           shift and go to state 38
-    DIVIDE          shift and go to state 39
+    RPAREN          shift and go to state 48
+    SUP             shift and go to state 34
+    INF             shift and go to state 35
+    INFEG           shift and go to state 36
+    EGALEGAL        shift and go to state 37
+    AND             shift and go to state 38
+    OR              shift and go to state 39
+    PLUS            shift and go to state 40
+    TIMES           shift and go to state 41
+    MINUS           shift and go to state 42
+    DIVIDE          shift and go to state 43
 
 
-state 25
+state 29
 
     (5) statement -> NAME EGAL expression .
     (6) expression -> expression . SUP expression
@@ -507,19 +606,19 @@ state 25
 
     SEMI            reduce using rule 5 (statement -> NAME EGAL expression .)
     RPAREN          reduce using rule 5 (statement -> NAME EGAL expression .)
-    SUP             shift and go to state 30
-    INF             shift and go to state 31
-    INFEG           shift and go to state 32
-    EGALEGAL        shift and go to state 33
-    AND             shift and go to state 34
-    OR              shift and go to state 35
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
-    MINUS           shift and go to state 38
-    DIVIDE          shift and go to state 39
+    SUP             shift and go to state 34
+    INF             shift and go to state 35
+    INFEG           shift and go to state 36
+    EGALEGAL        shift and go to state 37
+    AND             shift and go to state 38
+    OR              shift and go to state 39
+    PLUS            shift and go to state 40
+    TIMES           shift and go to state 41
+    MINUS           shift and go to state 42
+    DIVIDE          shift and go to state 43
 
 
-state 26
+state 30
 
     (17) statement -> IF LPAREN expression . RPAREN LACC bloc RACC
     (18) statement -> IF LPAREN expression . RPAREN LACC bloc RACC ELSE LACC bloc RACC
@@ -534,20 +633,20 @@ state 26
     (20) expression -> expression . MINUS expression
     (21) expression -> expression . DIVIDE expression
 
-    RPAREN          shift and go to state 43
-    SUP             shift and go to state 30
-    INF             shift and go to state 31
-    INFEG           shift and go to state 32
-    EGALEGAL        shift and go to state 33
-    AND             shift and go to state 34
-    OR              shift and go to state 35
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
-    MINUS           shift and go to state 38
-    DIVIDE          shift and go to state 39
+    RPAREN          shift and go to state 49
+    SUP             shift and go to state 34
+    INF             shift and go to state 35
+    INFEG           shift and go to state 36
+    EGALEGAL        shift and go to state 37
+    AND             shift and go to state 38
+    OR              shift and go to state 39
+    PLUS            shift and go to state 40
+    TIMES           shift and go to state 41
+    MINUS           shift and go to state 42
+    DIVIDE          shift and go to state 43
 
 
-state 27
+state 31
 
     (19) statement -> WHILE LPAREN expression . RPAREN LACC bloc RACC
     (6) expression -> expression . SUP expression
@@ -561,27 +660,27 @@ state 27
     (20) expression -> expression . MINUS expression
     (21) expression -> expression . DIVIDE expression
 
-    RPAREN          shift and go to state 44
-    SUP             shift and go to state 30
-    INF             shift and go to state 31
-    INFEG           shift and go to state 32
-    EGALEGAL        shift and go to state 33
-    AND             shift and go to state 34
-    OR              shift and go to state 35
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
-    MINUS           shift and go to state 38
-    DIVIDE          shift and go to state 39
+    RPAREN          shift and go to state 50
+    SUP             shift and go to state 34
+    INF             shift and go to state 35
+    INFEG           shift and go to state 36
+    EGALEGAL        shift and go to state 37
+    AND             shift and go to state 38
+    OR              shift and go to state 39
+    PLUS            shift and go to state 40
+    TIMES           shift and go to state 41
+    MINUS           shift and go to state 42
+    DIVIDE          shift and go to state 43
 
 
-state 28
+state 32
 
     (22) statement -> FOR LPAREN statement . SEMI expression SEMI statement RPAREN LACC bloc RACC
 
-    SEMI            shift and go to state 45
+    SEMI            shift and go to state 51
 
 
-state 29
+state 33
 
     (23) statement -> DEF NAME LPAREN . param_list RPAREN LACC bloc RACC
     (24) param_list -> . param_list COMMA NAME
@@ -589,14 +688,14 @@ state 29
     (26) param_list -> . empty
     (32) empty -> .
 
-    NAME            shift and go to state 46
+    NAME            shift and go to state 52
     RPAREN          reduce using rule 32 (empty -> .)
     COMMA           reduce using rule 32 (empty -> .)
 
-    param_list                     shift and go to state 47
-    empty                          shift and go to state 48
+    param_list                     shift and go to state 53
+    empty                          shift and go to state 54
 
-state 30
+state 34
 
     (6) expression -> expression SUP . expression
     (6) expression -> . expression SUP expression
@@ -613,14 +712,18 @@ state 30
     (20) expression -> . expression MINUS expression
     (21) expression -> . expression DIVIDE expression
     (28) expression -> . NAME LPAREN arg_list RPAREN
+    (33) expression -> . EVAL LPAREN expression RPAREN
+    (34) expression -> . STRING
 
-    LPAREN          shift and go to state 20
-    NUMBER          shift and go to state 21
-    NAME            shift and go to state 22
+    LPAREN          shift and go to state 21
+    NUMBER          shift and go to state 22
+    NAME            shift and go to state 23
+    EVAL            shift and go to state 24
+    STRING          shift and go to state 25
 
-    expression                     shift and go to state 49
+    expression                     shift and go to state 55
 
-state 31
+state 35
 
     (7) expression -> expression INF . expression
     (6) expression -> . expression SUP expression
@@ -637,14 +740,18 @@ state 31
     (20) expression -> . expression MINUS expression
     (21) expression -> . expression DIVIDE expression
     (28) expression -> . NAME LPAREN arg_list RPAREN
+    (33) expression -> . EVAL LPAREN expression RPAREN
+    (34) expression -> . STRING
 
-    LPAREN          shift and go to state 20
-    NUMBER          shift and go to state 21
-    NAME            shift and go to state 22
+    LPAREN          shift and go to state 21
+    NUMBER          shift and go to state 22
+    NAME            shift and go to state 23
+    EVAL            shift and go to state 24
+    STRING          shift and go to state 25
 
-    expression                     shift and go to state 50
+    expression                     shift and go to state 56
 
-state 32
+state 36
 
     (8) expression -> expression INFEG . expression
     (6) expression -> . expression SUP expression
@@ -661,14 +768,18 @@ state 32
     (20) expression -> . expression MINUS expression
     (21) expression -> . expression DIVIDE expression
     (28) expression -> . NAME LPAREN arg_list RPAREN
+    (33) expression -> . EVAL LPAREN expression RPAREN
+    (34) expression -> . STRING
 
-    LPAREN          shift and go to state 20
-    NUMBER          shift and go to state 21
-    NAME            shift and go to state 22
+    LPAREN          shift and go to state 21
+    NUMBER          shift and go to state 22
+    NAME            shift and go to state 23
+    EVAL            shift and go to state 24
+    STRING          shift and go to state 25
 
-    expression                     shift and go to state 51
+    expression                     shift and go to state 57
 
-state 33
+state 37
 
     (9) expression -> expression EGALEGAL . expression
     (6) expression -> . expression SUP expression
@@ -685,14 +796,18 @@ state 33
     (20) expression -> . expression MINUS expression
     (21) expression -> . expression DIVIDE expression
     (28) expression -> . NAME LPAREN arg_list RPAREN
+    (33) expression -> . EVAL LPAREN expression RPAREN
+    (34) expression -> . STRING
 
-    LPAREN          shift and go to state 20
-    NUMBER          shift and go to state 21
-    NAME            shift and go to state 22
+    LPAREN          shift and go to state 21
+    NUMBER          shift and go to state 22
+    NAME            shift and go to state 23
+    EVAL            shift and go to state 24
+    STRING          shift and go to state 25
 
-    expression                     shift and go to state 52
+    expression                     shift and go to state 58
 
-state 34
+state 38
 
     (10) expression -> expression AND . expression
     (6) expression -> . expression SUP expression
@@ -709,14 +824,18 @@ state 34
     (20) expression -> . expression MINUS expression
     (21) expression -> . expression DIVIDE expression
     (28) expression -> . NAME LPAREN arg_list RPAREN
+    (33) expression -> . EVAL LPAREN expression RPAREN
+    (34) expression -> . STRING
 
-    LPAREN          shift and go to state 20
-    NUMBER          shift and go to state 21
-    NAME            shift and go to state 22
+    LPAREN          shift and go to state 21
+    NUMBER          shift and go to state 22
+    NAME            shift and go to state 23
+    EVAL            shift and go to state 24
+    STRING          shift and go to state 25
 
-    expression                     shift and go to state 53
+    expression                     shift and go to state 59
 
-state 35
+state 39
 
     (11) expression -> expression OR . expression
     (6) expression -> . expression SUP expression
@@ -733,14 +852,18 @@ state 35
     (20) expression -> . expression MINUS expression
     (21) expression -> . expression DIVIDE expression
     (28) expression -> . NAME LPAREN arg_list RPAREN
+    (33) expression -> . EVAL LPAREN expression RPAREN
+    (34) expression -> . STRING
 
-    LPAREN          shift and go to state 20
-    NUMBER          shift and go to state 21
-    NAME            shift and go to state 22
+    LPAREN          shift and go to state 21
+    NUMBER          shift and go to state 22
+    NAME            shift and go to state 23
+    EVAL            shift and go to state 24
+    STRING          shift and go to state 25
 
-    expression                     shift and go to state 54
+    expression                     shift and go to state 60
 
-state 36
+state 40
 
     (12) expression -> expression PLUS . expression
     (6) expression -> . expression SUP expression
@@ -757,14 +880,18 @@ state 36
     (20) expression -> . expression MINUS expression
     (21) expression -> . expression DIVIDE expression
     (28) expression -> . NAME LPAREN arg_list RPAREN
+    (33) expression -> . EVAL LPAREN expression RPAREN
+    (34) expression -> . STRING
 
-    LPAREN          shift and go to state 20
-    NUMBER          shift and go to state 21
-    NAME            shift and go to state 22
+    LPAREN          shift and go to state 21
+    NUMBER          shift and go to state 22
+    NAME            shift and go to state 23
+    EVAL            shift and go to state 24
+    STRING          shift and go to state 25
 
-    expression                     shift and go to state 55
+    expression                     shift and go to state 61
 
-state 37
+state 41
 
     (13) expression -> expression TIMES . expression
     (6) expression -> . expression SUP expression
@@ -781,14 +908,18 @@ state 37
     (20) expression -> . expression MINUS expression
     (21) expression -> . expression DIVIDE expression
     (28) expression -> . NAME LPAREN arg_list RPAREN
+    (33) expression -> . EVAL LPAREN expression RPAREN
+    (34) expression -> . STRING
 
-    LPAREN          shift and go to state 20
-    NUMBER          shift and go to state 21
-    NAME            shift and go to state 22
+    LPAREN          shift and go to state 21
+    NUMBER          shift and go to state 22
+    NAME            shift and go to state 23
+    EVAL            shift and go to state 24
+    STRING          shift and go to state 25
 
-    expression                     shift and go to state 56
+    expression                     shift and go to state 62
 
-state 38
+state 42
 
     (20) expression -> expression MINUS . expression
     (6) expression -> . expression SUP expression
@@ -805,14 +936,18 @@ state 38
     (20) expression -> . expression MINUS expression
     (21) expression -> . expression DIVIDE expression
     (28) expression -> . NAME LPAREN arg_list RPAREN
+    (33) expression -> . EVAL LPAREN expression RPAREN
+    (34) expression -> . STRING
 
-    LPAREN          shift and go to state 20
-    NUMBER          shift and go to state 21
-    NAME            shift and go to state 22
+    LPAREN          shift and go to state 21
+    NUMBER          shift and go to state 22
+    NAME            shift and go to state 23
+    EVAL            shift and go to state 24
+    STRING          shift and go to state 25
 
-    expression                     shift and go to state 57
+    expression                     shift and go to state 63
 
-state 39
+state 43
 
     (21) expression -> expression DIVIDE . expression
     (6) expression -> . expression SUP expression
@@ -829,14 +964,18 @@ state 39
     (20) expression -> . expression MINUS expression
     (21) expression -> . expression DIVIDE expression
     (28) expression -> . NAME LPAREN arg_list RPAREN
+    (33) expression -> . EVAL LPAREN expression RPAREN
+    (34) expression -> . STRING
 
-    LPAREN          shift and go to state 20
-    NUMBER          shift and go to state 21
-    NAME            shift and go to state 22
+    LPAREN          shift and go to state 21
+    NUMBER          shift and go to state 22
+    NAME            shift and go to state 23
+    EVAL            shift and go to state 24
+    STRING          shift and go to state 25
 
-    expression                     shift and go to state 58
+    expression                     shift and go to state 64
 
-state 40
+state 44
 
     (14) expression -> LPAREN expression . RPAREN
     (6) expression -> expression . SUP expression
@@ -850,20 +989,20 @@ state 40
     (20) expression -> expression . MINUS expression
     (21) expression -> expression . DIVIDE expression
 
-    RPAREN          shift and go to state 59
-    SUP             shift and go to state 30
-    INF             shift and go to state 31
-    INFEG           shift and go to state 32
-    EGALEGAL        shift and go to state 33
-    AND             shift and go to state 34
-    OR              shift and go to state 35
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
-    MINUS           shift and go to state 38
-    DIVIDE          shift and go to state 39
+    RPAREN          shift and go to state 65
+    SUP             shift and go to state 34
+    INF             shift and go to state 35
+    INFEG           shift and go to state 36
+    EGALEGAL        shift and go to state 37
+    AND             shift and go to state 38
+    OR              shift and go to state 39
+    PLUS            shift and go to state 40
+    TIMES           shift and go to state 41
+    MINUS           shift and go to state 42
+    DIVIDE          shift and go to state 43
 
 
-state 41
+state 45
 
     (28) expression -> NAME LPAREN . arg_list RPAREN
     (29) arg_list -> . arg_list COMMA expression
@@ -883,19 +1022,78 @@ state 41
     (20) expression -> . expression MINUS expression
     (21) expression -> . expression DIVIDE expression
     (28) expression -> . NAME LPAREN arg_list RPAREN
+    (33) expression -> . EVAL LPAREN expression RPAREN
+    (34) expression -> . STRING
     (32) empty -> .
 
-    LPAREN          shift and go to state 20
-    NUMBER          shift and go to state 21
-    NAME            shift and go to state 22
+    LPAREN          shift and go to state 21
+    NUMBER          shift and go to state 22
+    NAME            shift and go to state 23
+    EVAL            shift and go to state 24
+    STRING          shift and go to state 25
     RPAREN          reduce using rule 32 (empty -> .)
     COMMA           reduce using rule 32 (empty -> .)
 
-    arg_list                       shift and go to state 60
-    expression                     shift and go to state 61
-    empty                          shift and go to state 62
+    arg_list                       shift and go to state 66
+    expression                     shift and go to state 67
+    empty                          shift and go to state 68
 
-state 42
+state 46
+
+    (33) expression -> EVAL LPAREN . expression RPAREN
+    (6) expression -> . expression SUP expression
+    (7) expression -> . expression INF expression
+    (8) expression -> . expression INFEG expression
+    (9) expression -> . expression EGALEGAL expression
+    (10) expression -> . expression AND expression
+    (11) expression -> . expression OR expression
+    (12) expression -> . expression PLUS expression
+    (13) expression -> . expression TIMES expression
+    (14) expression -> . LPAREN expression RPAREN
+    (15) expression -> . NUMBER
+    (16) expression -> . NAME
+    (20) expression -> . expression MINUS expression
+    (21) expression -> . expression DIVIDE expression
+    (28) expression -> . NAME LPAREN arg_list RPAREN
+    (33) expression -> . EVAL LPAREN expression RPAREN
+    (34) expression -> . STRING
+
+    LPAREN          shift and go to state 21
+    NUMBER          shift and go to state 22
+    NAME            shift and go to state 23
+    EVAL            shift and go to state 24
+    STRING          shift and go to state 25
+
+    expression                     shift and go to state 69
+
+state 47
+
+    (35) statement -> EXEC LPAREN expression . RPAREN
+    (6) expression -> expression . SUP expression
+    (7) expression -> expression . INF expression
+    (8) expression -> expression . INFEG expression
+    (9) expression -> expression . EGALEGAL expression
+    (10) expression -> expression . AND expression
+    (11) expression -> expression . OR expression
+    (12) expression -> expression . PLUS expression
+    (13) expression -> expression . TIMES expression
+    (20) expression -> expression . MINUS expression
+    (21) expression -> expression . DIVIDE expression
+
+    RPAREN          shift and go to state 70
+    SUP             shift and go to state 34
+    INF             shift and go to state 35
+    INFEG           shift and go to state 36
+    EGALEGAL        shift and go to state 37
+    AND             shift and go to state 38
+    OR              shift and go to state 39
+    PLUS            shift and go to state 40
+    TIMES           shift and go to state 41
+    MINUS           shift and go to state 42
+    DIVIDE          shift and go to state 43
+
+
+state 48
 
     (4) statement -> PRINT LPAREN expression RPAREN .
 
@@ -903,22 +1101,22 @@ state 42
     RPAREN          reduce using rule 4 (statement -> PRINT LPAREN expression RPAREN .)
 
 
-state 43
+state 49
 
     (17) statement -> IF LPAREN expression RPAREN . LACC bloc RACC
     (18) statement -> IF LPAREN expression RPAREN . LACC bloc RACC ELSE LACC bloc RACC
 
-    LACC            shift and go to state 63
+    LACC            shift and go to state 71
 
 
-state 44
+state 50
 
     (19) statement -> WHILE LPAREN expression RPAREN . LACC bloc RACC
 
-    LACC            shift and go to state 64
+    LACC            shift and go to state 72
 
 
-state 45
+state 51
 
     (22) statement -> FOR LPAREN statement SEMI . expression SEMI statement RPAREN LACC bloc RACC
     (6) expression -> . expression SUP expression
@@ -935,14 +1133,18 @@ state 45
     (20) expression -> . expression MINUS expression
     (21) expression -> . expression DIVIDE expression
     (28) expression -> . NAME LPAREN arg_list RPAREN
+    (33) expression -> . EVAL LPAREN expression RPAREN
+    (34) expression -> . STRING
 
-    LPAREN          shift and go to state 20
-    NUMBER          shift and go to state 21
-    NAME            shift and go to state 22
+    LPAREN          shift and go to state 21
+    NUMBER          shift and go to state 22
+    NAME            shift and go to state 23
+    EVAL            shift and go to state 24
+    STRING          shift and go to state 25
 
-    expression                     shift and go to state 65
+    expression                     shift and go to state 73
 
-state 46
+state 52
 
     (25) param_list -> NAME .
 
@@ -950,16 +1152,16 @@ state 46
     COMMA           reduce using rule 25 (param_list -> NAME .)
 
 
-state 47
+state 53
 
     (23) statement -> DEF NAME LPAREN param_list . RPAREN LACC bloc RACC
     (24) param_list -> param_list . COMMA NAME
 
-    RPAREN          shift and go to state 66
-    COMMA           shift and go to state 67
+    RPAREN          shift and go to state 74
+    COMMA           shift and go to state 75
 
 
-state 48
+state 54
 
     (26) param_list -> empty .
 
@@ -967,7 +1169,7 @@ state 48
     COMMA           reduce using rule 26 (param_list -> empty .)
 
 
-state 49
+state 55
 
     (6) expression -> expression SUP expression .
     (6) expression -> expression . SUP expression
@@ -990,24 +1192,24 @@ state 49
     SEMI            reduce using rule 6 (expression -> expression SUP expression .)
     RPAREN          reduce using rule 6 (expression -> expression SUP expression .)
     COMMA           reduce using rule 6 (expression -> expression SUP expression .)
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
-    MINUS           shift and go to state 38
-    DIVIDE          shift and go to state 39
+    PLUS            shift and go to state 40
+    TIMES           shift and go to state 41
+    MINUS           shift and go to state 42
+    DIVIDE          shift and go to state 43
 
   ! PLUS            [ reduce using rule 6 (expression -> expression SUP expression .) ]
   ! TIMES           [ reduce using rule 6 (expression -> expression SUP expression .) ]
   ! MINUS           [ reduce using rule 6 (expression -> expression SUP expression .) ]
   ! DIVIDE          [ reduce using rule 6 (expression -> expression SUP expression .) ]
-  ! SUP             [ shift and go to state 30 ]
-  ! INF             [ shift and go to state 31 ]
-  ! INFEG           [ shift and go to state 32 ]
-  ! EGALEGAL        [ shift and go to state 33 ]
-  ! AND             [ shift and go to state 34 ]
-  ! OR              [ shift and go to state 35 ]
+  ! SUP             [ shift and go to state 34 ]
+  ! INF             [ shift and go to state 35 ]
+  ! INFEG           [ shift and go to state 36 ]
+  ! EGALEGAL        [ shift and go to state 37 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
 
 
-state 50
+state 56
 
     (7) expression -> expression INF expression .
     (6) expression -> expression . SUP expression
@@ -1030,24 +1232,24 @@ state 50
     SEMI            reduce using rule 7 (expression -> expression INF expression .)
     RPAREN          reduce using rule 7 (expression -> expression INF expression .)
     COMMA           reduce using rule 7 (expression -> expression INF expression .)
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
-    MINUS           shift and go to state 38
-    DIVIDE          shift and go to state 39
+    PLUS            shift and go to state 40
+    TIMES           shift and go to state 41
+    MINUS           shift and go to state 42
+    DIVIDE          shift and go to state 43
 
   ! PLUS            [ reduce using rule 7 (expression -> expression INF expression .) ]
   ! TIMES           [ reduce using rule 7 (expression -> expression INF expression .) ]
   ! MINUS           [ reduce using rule 7 (expression -> expression INF expression .) ]
   ! DIVIDE          [ reduce using rule 7 (expression -> expression INF expression .) ]
-  ! SUP             [ shift and go to state 30 ]
-  ! INF             [ shift and go to state 31 ]
-  ! INFEG           [ shift and go to state 32 ]
-  ! EGALEGAL        [ shift and go to state 33 ]
-  ! AND             [ shift and go to state 34 ]
-  ! OR              [ shift and go to state 35 ]
+  ! SUP             [ shift and go to state 34 ]
+  ! INF             [ shift and go to state 35 ]
+  ! INFEG           [ shift and go to state 36 ]
+  ! EGALEGAL        [ shift and go to state 37 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
 
 
-state 51
+state 57
 
     (8) expression -> expression INFEG expression .
     (6) expression -> expression . SUP expression
@@ -1070,24 +1272,24 @@ state 51
     SEMI            reduce using rule 8 (expression -> expression INFEG expression .)
     RPAREN          reduce using rule 8 (expression -> expression INFEG expression .)
     COMMA           reduce using rule 8 (expression -> expression INFEG expression .)
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
-    MINUS           shift and go to state 38
-    DIVIDE          shift and go to state 39
+    PLUS            shift and go to state 40
+    TIMES           shift and go to state 41
+    MINUS           shift and go to state 42
+    DIVIDE          shift and go to state 43
 
   ! PLUS            [ reduce using rule 8 (expression -> expression INFEG expression .) ]
   ! TIMES           [ reduce using rule 8 (expression -> expression INFEG expression .) ]
   ! MINUS           [ reduce using rule 8 (expression -> expression INFEG expression .) ]
   ! DIVIDE          [ reduce using rule 8 (expression -> expression INFEG expression .) ]
-  ! SUP             [ shift and go to state 30 ]
-  ! INF             [ shift and go to state 31 ]
-  ! INFEG           [ shift and go to state 32 ]
-  ! EGALEGAL        [ shift and go to state 33 ]
-  ! AND             [ shift and go to state 34 ]
-  ! OR              [ shift and go to state 35 ]
+  ! SUP             [ shift and go to state 34 ]
+  ! INF             [ shift and go to state 35 ]
+  ! INFEG           [ shift and go to state 36 ]
+  ! EGALEGAL        [ shift and go to state 37 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
 
 
-state 52
+state 58
 
     (9) expression -> expression EGALEGAL expression .
     (6) expression -> expression . SUP expression
@@ -1110,24 +1312,24 @@ state 52
     SEMI            reduce using rule 9 (expression -> expression EGALEGAL expression .)
     RPAREN          reduce using rule 9 (expression -> expression EGALEGAL expression .)
     COMMA           reduce using rule 9 (expression -> expression EGALEGAL expression .)
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
-    MINUS           shift and go to state 38
-    DIVIDE          shift and go to state 39
+    PLUS            shift and go to state 40
+    TIMES           shift and go to state 41
+    MINUS           shift and go to state 42
+    DIVIDE          shift and go to state 43
 
   ! PLUS            [ reduce using rule 9 (expression -> expression EGALEGAL expression .) ]
   ! TIMES           [ reduce using rule 9 (expression -> expression EGALEGAL expression .) ]
   ! MINUS           [ reduce using rule 9 (expression -> expression EGALEGAL expression .) ]
   ! DIVIDE          [ reduce using rule 9 (expression -> expression EGALEGAL expression .) ]
-  ! SUP             [ shift and go to state 30 ]
-  ! INF             [ shift and go to state 31 ]
-  ! INFEG           [ shift and go to state 32 ]
-  ! EGALEGAL        [ shift and go to state 33 ]
-  ! AND             [ shift and go to state 34 ]
-  ! OR              [ shift and go to state 35 ]
+  ! SUP             [ shift and go to state 34 ]
+  ! INF             [ shift and go to state 35 ]
+  ! INFEG           [ shift and go to state 36 ]
+  ! EGALEGAL        [ shift and go to state 37 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
 
 
-state 53
+state 59
 
     (10) expression -> expression AND expression .
     (6) expression -> expression . SUP expression
@@ -1146,14 +1348,14 @@ state 53
     SEMI            reduce using rule 10 (expression -> expression AND expression .)
     RPAREN          reduce using rule 10 (expression -> expression AND expression .)
     COMMA           reduce using rule 10 (expression -> expression AND expression .)
-    SUP             shift and go to state 30
-    INF             shift and go to state 31
-    INFEG           shift and go to state 32
-    EGALEGAL        shift and go to state 33
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
-    MINUS           shift and go to state 38
-    DIVIDE          shift and go to state 39
+    SUP             shift and go to state 34
+    INF             shift and go to state 35
+    INFEG           shift and go to state 36
+    EGALEGAL        shift and go to state 37
+    PLUS            shift and go to state 40
+    TIMES           shift and go to state 41
+    MINUS           shift and go to state 42
+    DIVIDE          shift and go to state 43
 
   ! SUP             [ reduce using rule 10 (expression -> expression AND expression .) ]
   ! INF             [ reduce using rule 10 (expression -> expression AND expression .) ]
@@ -1163,11 +1365,11 @@ state 53
   ! TIMES           [ reduce using rule 10 (expression -> expression AND expression .) ]
   ! MINUS           [ reduce using rule 10 (expression -> expression AND expression .) ]
   ! DIVIDE          [ reduce using rule 10 (expression -> expression AND expression .) ]
-  ! AND             [ shift and go to state 34 ]
-  ! OR              [ shift and go to state 35 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
 
 
-state 54
+state 60
 
     (11) expression -> expression OR expression .
     (6) expression -> expression . SUP expression
@@ -1185,15 +1387,15 @@ state 54
     SEMI            reduce using rule 11 (expression -> expression OR expression .)
     RPAREN          reduce using rule 11 (expression -> expression OR expression .)
     COMMA           reduce using rule 11 (expression -> expression OR expression .)
-    SUP             shift and go to state 30
-    INF             shift and go to state 31
-    INFEG           shift and go to state 32
-    EGALEGAL        shift and go to state 33
-    AND             shift and go to state 34
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
-    MINUS           shift and go to state 38
-    DIVIDE          shift and go to state 39
+    SUP             shift and go to state 34
+    INF             shift and go to state 35
+    INFEG           shift and go to state 36
+    EGALEGAL        shift and go to state 37
+    AND             shift and go to state 38
+    PLUS            shift and go to state 40
+    TIMES           shift and go to state 41
+    MINUS           shift and go to state 42
+    DIVIDE          shift and go to state 43
 
   ! SUP             [ reduce using rule 11 (expression -> expression OR expression .) ]
   ! INF             [ reduce using rule 11 (expression -> expression OR expression .) ]
@@ -1204,10 +1406,10 @@ state 54
   ! TIMES           [ reduce using rule 11 (expression -> expression OR expression .) ]
   ! MINUS           [ reduce using rule 11 (expression -> expression OR expression .) ]
   ! DIVIDE          [ reduce using rule 11 (expression -> expression OR expression .) ]
-  ! OR              [ shift and go to state 35 ]
+  ! OR              [ shift and go to state 39 ]
 
 
-state 55
+state 61
 
     (12) expression -> expression PLUS expression .
     (6) expression -> expression . SUP expression
@@ -1232,22 +1434,22 @@ state 55
     SEMI            reduce using rule 12 (expression -> expression PLUS expression .)
     RPAREN          reduce using rule 12 (expression -> expression PLUS expression .)
     COMMA           reduce using rule 12 (expression -> expression PLUS expression .)
-    TIMES           shift and go to state 37
-    DIVIDE          shift and go to state 39
+    TIMES           shift and go to state 41
+    DIVIDE          shift and go to state 43
 
   ! TIMES           [ reduce using rule 12 (expression -> expression PLUS expression .) ]
   ! DIVIDE          [ reduce using rule 12 (expression -> expression PLUS expression .) ]
-  ! SUP             [ shift and go to state 30 ]
-  ! INF             [ shift and go to state 31 ]
-  ! INFEG           [ shift and go to state 32 ]
-  ! EGALEGAL        [ shift and go to state 33 ]
-  ! AND             [ shift and go to state 34 ]
-  ! OR              [ shift and go to state 35 ]
-  ! PLUS            [ shift and go to state 36 ]
-  ! MINUS           [ shift and go to state 38 ]
+  ! SUP             [ shift and go to state 34 ]
+  ! INF             [ shift and go to state 35 ]
+  ! INFEG           [ shift and go to state 36 ]
+  ! EGALEGAL        [ shift and go to state 37 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
+  ! PLUS            [ shift and go to state 40 ]
+  ! MINUS           [ shift and go to state 42 ]
 
 
-state 56
+state 62
 
     (13) expression -> expression TIMES expression .
     (6) expression -> expression . SUP expression
@@ -1275,19 +1477,19 @@ state 56
     RPAREN          reduce using rule 13 (expression -> expression TIMES expression .)
     COMMA           reduce using rule 13 (expression -> expression TIMES expression .)
 
-  ! SUP             [ shift and go to state 30 ]
-  ! INF             [ shift and go to state 31 ]
-  ! INFEG           [ shift and go to state 32 ]
-  ! EGALEGAL        [ shift and go to state 33 ]
-  ! AND             [ shift and go to state 34 ]
-  ! OR              [ shift and go to state 35 ]
-  ! PLUS            [ shift and go to state 36 ]
-  ! TIMES           [ shift and go to state 37 ]
-  ! MINUS           [ shift and go to state 38 ]
-  ! DIVIDE          [ shift and go to state 39 ]
+  ! SUP             [ shift and go to state 34 ]
+  ! INF             [ shift and go to state 35 ]
+  ! INFEG           [ shift and go to state 36 ]
+  ! EGALEGAL        [ shift and go to state 37 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
+  ! PLUS            [ shift and go to state 40 ]
+  ! TIMES           [ shift and go to state 41 ]
+  ! MINUS           [ shift and go to state 42 ]
+  ! DIVIDE          [ shift and go to state 43 ]
 
 
-state 57
+state 63
 
     (20) expression -> expression MINUS expression .
     (6) expression -> expression . SUP expression
@@ -1312,22 +1514,22 @@ state 57
     SEMI            reduce using rule 20 (expression -> expression MINUS expression .)
     RPAREN          reduce using rule 20 (expression -> expression MINUS expression .)
     COMMA           reduce using rule 20 (expression -> expression MINUS expression .)
-    TIMES           shift and go to state 37
-    DIVIDE          shift and go to state 39
+    TIMES           shift and go to state 41
+    DIVIDE          shift and go to state 43
 
   ! TIMES           [ reduce using rule 20 (expression -> expression MINUS expression .) ]
   ! DIVIDE          [ reduce using rule 20 (expression -> expression MINUS expression .) ]
-  ! SUP             [ shift and go to state 30 ]
-  ! INF             [ shift and go to state 31 ]
-  ! INFEG           [ shift and go to state 32 ]
-  ! EGALEGAL        [ shift and go to state 33 ]
-  ! AND             [ shift and go to state 34 ]
-  ! OR              [ shift and go to state 35 ]
-  ! PLUS            [ shift and go to state 36 ]
-  ! MINUS           [ shift and go to state 38 ]
+  ! SUP             [ shift and go to state 34 ]
+  ! INF             [ shift and go to state 35 ]
+  ! INFEG           [ shift and go to state 36 ]
+  ! EGALEGAL        [ shift and go to state 37 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
+  ! PLUS            [ shift and go to state 40 ]
+  ! MINUS           [ shift and go to state 42 ]
 
 
-state 58
+state 64
 
     (21) expression -> expression DIVIDE expression .
     (6) expression -> expression . SUP expression
@@ -1355,19 +1557,19 @@ state 58
     RPAREN          reduce using rule 21 (expression -> expression DIVIDE expression .)
     COMMA           reduce using rule 21 (expression -> expression DIVIDE expression .)
 
-  ! SUP             [ shift and go to state 30 ]
-  ! INF             [ shift and go to state 31 ]
-  ! INFEG           [ shift and go to state 32 ]
-  ! EGALEGAL        [ shift and go to state 33 ]
-  ! AND             [ shift and go to state 34 ]
-  ! OR              [ shift and go to state 35 ]
-  ! PLUS            [ shift and go to state 36 ]
-  ! TIMES           [ shift and go to state 37 ]
-  ! MINUS           [ shift and go to state 38 ]
-  ! DIVIDE          [ shift and go to state 39 ]
+  ! SUP             [ shift and go to state 34 ]
+  ! INF             [ shift and go to state 35 ]
+  ! INFEG           [ shift and go to state 36 ]
+  ! EGALEGAL        [ shift and go to state 37 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
+  ! PLUS            [ shift and go to state 40 ]
+  ! TIMES           [ shift and go to state 41 ]
+  ! MINUS           [ shift and go to state 42 ]
+  ! DIVIDE          [ shift and go to state 43 ]
 
 
-state 59
+state 65
 
     (14) expression -> LPAREN expression RPAREN .
 
@@ -1386,16 +1588,16 @@ state 59
     COMMA           reduce using rule 14 (expression -> LPAREN expression RPAREN .)
 
 
-state 60
+state 66
 
     (28) expression -> NAME LPAREN arg_list . RPAREN
     (29) arg_list -> arg_list . COMMA expression
 
-    RPAREN          shift and go to state 68
-    COMMA           shift and go to state 69
+    RPAREN          shift and go to state 76
+    COMMA           shift and go to state 77
 
 
-state 61
+state 67
 
     (30) arg_list -> expression .
     (6) expression -> expression . SUP expression
@@ -1411,19 +1613,19 @@ state 61
 
     RPAREN          reduce using rule 30 (arg_list -> expression .)
     COMMA           reduce using rule 30 (arg_list -> expression .)
-    SUP             shift and go to state 30
-    INF             shift and go to state 31
-    INFEG           shift and go to state 32
-    EGALEGAL        shift and go to state 33
-    AND             shift and go to state 34
-    OR              shift and go to state 35
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
-    MINUS           shift and go to state 38
-    DIVIDE          shift and go to state 39
+    SUP             shift and go to state 34
+    INF             shift and go to state 35
+    INFEG           shift and go to state 36
+    EGALEGAL        shift and go to state 37
+    AND             shift and go to state 38
+    OR              shift and go to state 39
+    PLUS            shift and go to state 40
+    TIMES           shift and go to state 41
+    MINUS           shift and go to state 42
+    DIVIDE          shift and go to state 43
 
 
-state 62
+state 68
 
     (31) arg_list -> empty .
 
@@ -1431,7 +1633,42 @@ state 62
     COMMA           reduce using rule 31 (arg_list -> empty .)
 
 
-state 63
+state 69
+
+    (33) expression -> EVAL LPAREN expression . RPAREN
+    (6) expression -> expression . SUP expression
+    (7) expression -> expression . INF expression
+    (8) expression -> expression . INFEG expression
+    (9) expression -> expression . EGALEGAL expression
+    (10) expression -> expression . AND expression
+    (11) expression -> expression . OR expression
+    (12) expression -> expression . PLUS expression
+    (13) expression -> expression . TIMES expression
+    (20) expression -> expression . MINUS expression
+    (21) expression -> expression . DIVIDE expression
+
+    RPAREN          shift and go to state 78
+    SUP             shift and go to state 34
+    INF             shift and go to state 35
+    INFEG           shift and go to state 36
+    EGALEGAL        shift and go to state 37
+    AND             shift and go to state 38
+    OR              shift and go to state 39
+    PLUS            shift and go to state 40
+    TIMES           shift and go to state 41
+    MINUS           shift and go to state 42
+    DIVIDE          shift and go to state 43
+
+
+state 70
+
+    (35) statement -> EXEC LPAREN expression RPAREN .
+
+    SEMI            reduce using rule 35 (statement -> EXEC LPAREN expression RPAREN .)
+    RPAREN          reduce using rule 35 (statement -> EXEC LPAREN expression RPAREN .)
+
+
+state 71
 
     (17) statement -> IF LPAREN expression RPAREN LACC . bloc RACC
     (18) statement -> IF LPAREN expression RPAREN LACC . bloc RACC ELSE LACC bloc RACC
@@ -1445,6 +1682,7 @@ state 63
     (22) statement -> . FOR LPAREN statement SEMI expression SEMI statement RPAREN LACC bloc RACC
     (23) statement -> . DEF NAME LPAREN param_list RPAREN LACC bloc RACC
     (27) statement -> . RETURN expression
+    (35) statement -> . EXEC LPAREN expression RPAREN
 
     PRINT           shift and go to state 4
     NAME            shift and go to state 5
@@ -1453,11 +1691,12 @@ state 63
     FOR             shift and go to state 8
     DEF             shift and go to state 9
     RETURN          shift and go to state 10
+    EXEC            shift and go to state 11
 
-    bloc                           shift and go to state 70
+    bloc                           shift and go to state 79
     statement                      shift and go to state 3
 
-state 64
+state 72
 
     (19) statement -> WHILE LPAREN expression RPAREN LACC . bloc RACC
     (2) bloc -> . bloc statement SEMI
@@ -1470,6 +1709,7 @@ state 64
     (22) statement -> . FOR LPAREN statement SEMI expression SEMI statement RPAREN LACC bloc RACC
     (23) statement -> . DEF NAME LPAREN param_list RPAREN LACC bloc RACC
     (27) statement -> . RETURN expression
+    (35) statement -> . EXEC LPAREN expression RPAREN
 
     PRINT           shift and go to state 4
     NAME            shift and go to state 5
@@ -1478,11 +1718,12 @@ state 64
     FOR             shift and go to state 8
     DEF             shift and go to state 9
     RETURN          shift and go to state 10
+    EXEC            shift and go to state 11
 
-    bloc                           shift and go to state 71
+    bloc                           shift and go to state 80
     statement                      shift and go to state 3
 
-state 65
+state 73
 
     (22) statement -> FOR LPAREN statement SEMI expression . SEMI statement RPAREN LACC bloc RACC
     (6) expression -> expression . SUP expression
@@ -1496,34 +1737,34 @@ state 65
     (20) expression -> expression . MINUS expression
     (21) expression -> expression . DIVIDE expression
 
-    SEMI            shift and go to state 72
-    SUP             shift and go to state 30
-    INF             shift and go to state 31
-    INFEG           shift and go to state 32
-    EGALEGAL        shift and go to state 33
-    AND             shift and go to state 34
-    OR              shift and go to state 35
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
-    MINUS           shift and go to state 38
-    DIVIDE          shift and go to state 39
+    SEMI            shift and go to state 81
+    SUP             shift and go to state 34
+    INF             shift and go to state 35
+    INFEG           shift and go to state 36
+    EGALEGAL        shift and go to state 37
+    AND             shift and go to state 38
+    OR              shift and go to state 39
+    PLUS            shift and go to state 40
+    TIMES           shift and go to state 41
+    MINUS           shift and go to state 42
+    DIVIDE          shift and go to state 43
 
 
-state 66
+state 74
 
     (23) statement -> DEF NAME LPAREN param_list RPAREN . LACC bloc RACC
 
-    LACC            shift and go to state 73
+    LACC            shift and go to state 82
 
 
-state 67
+state 75
 
     (24) param_list -> param_list COMMA . NAME
 
-    NAME            shift and go to state 74
+    NAME            shift and go to state 83
 
 
-state 68
+state 76
 
     (28) expression -> NAME LPAREN arg_list RPAREN .
 
@@ -1542,7 +1783,7 @@ state 68
     COMMA           reduce using rule 28 (expression -> NAME LPAREN arg_list RPAREN .)
 
 
-state 69
+state 77
 
     (29) arg_list -> arg_list COMMA . expression
     (6) expression -> . expression SUP expression
@@ -1559,14 +1800,37 @@ state 69
     (20) expression -> . expression MINUS expression
     (21) expression -> . expression DIVIDE expression
     (28) expression -> . NAME LPAREN arg_list RPAREN
+    (33) expression -> . EVAL LPAREN expression RPAREN
+    (34) expression -> . STRING
 
-    LPAREN          shift and go to state 20
-    NUMBER          shift and go to state 21
-    NAME            shift and go to state 22
+    LPAREN          shift and go to state 21
+    NUMBER          shift and go to state 22
+    NAME            shift and go to state 23
+    EVAL            shift and go to state 24
+    STRING          shift and go to state 25
 
-    expression                     shift and go to state 75
+    expression                     shift and go to state 84
 
-state 70
+state 78
+
+    (33) expression -> EVAL LPAREN expression RPAREN .
+
+    SUP             reduce using rule 33 (expression -> EVAL LPAREN expression RPAREN .)
+    INF             reduce using rule 33 (expression -> EVAL LPAREN expression RPAREN .)
+    INFEG           reduce using rule 33 (expression -> EVAL LPAREN expression RPAREN .)
+    EGALEGAL        reduce using rule 33 (expression -> EVAL LPAREN expression RPAREN .)
+    AND             reduce using rule 33 (expression -> EVAL LPAREN expression RPAREN .)
+    OR              reduce using rule 33 (expression -> EVAL LPAREN expression RPAREN .)
+    PLUS            reduce using rule 33 (expression -> EVAL LPAREN expression RPAREN .)
+    TIMES           reduce using rule 33 (expression -> EVAL LPAREN expression RPAREN .)
+    MINUS           reduce using rule 33 (expression -> EVAL LPAREN expression RPAREN .)
+    DIVIDE          reduce using rule 33 (expression -> EVAL LPAREN expression RPAREN .)
+    SEMI            reduce using rule 33 (expression -> EVAL LPAREN expression RPAREN .)
+    RPAREN          reduce using rule 33 (expression -> EVAL LPAREN expression RPAREN .)
+    COMMA           reduce using rule 33 (expression -> EVAL LPAREN expression RPAREN .)
+
+
+state 79
 
     (17) statement -> IF LPAREN expression RPAREN LACC bloc . RACC
     (18) statement -> IF LPAREN expression RPAREN LACC bloc . RACC ELSE LACC bloc RACC
@@ -1579,8 +1843,9 @@ state 70
     (22) statement -> . FOR LPAREN statement SEMI expression SEMI statement RPAREN LACC bloc RACC
     (23) statement -> . DEF NAME LPAREN param_list RPAREN LACC bloc RACC
     (27) statement -> . RETURN expression
+    (35) statement -> . EXEC LPAREN expression RPAREN
 
-    RACC            shift and go to state 76
+    RACC            shift and go to state 85
     PRINT           shift and go to state 4
     NAME            shift and go to state 5
     IF              shift and go to state 6
@@ -1588,10 +1853,11 @@ state 70
     FOR             shift and go to state 8
     DEF             shift and go to state 9
     RETURN          shift and go to state 10
+    EXEC            shift and go to state 11
 
-    statement                      shift and go to state 11
+    statement                      shift and go to state 12
 
-state 71
+state 80
 
     (19) statement -> WHILE LPAREN expression RPAREN LACC bloc . RACC
     (2) bloc -> bloc . statement SEMI
@@ -1603,8 +1869,9 @@ state 71
     (22) statement -> . FOR LPAREN statement SEMI expression SEMI statement RPAREN LACC bloc RACC
     (23) statement -> . DEF NAME LPAREN param_list RPAREN LACC bloc RACC
     (27) statement -> . RETURN expression
+    (35) statement -> . EXEC LPAREN expression RPAREN
 
-    RACC            shift and go to state 77
+    RACC            shift and go to state 86
     PRINT           shift and go to state 4
     NAME            shift and go to state 5
     IF              shift and go to state 6
@@ -1612,10 +1879,11 @@ state 71
     FOR             shift and go to state 8
     DEF             shift and go to state 9
     RETURN          shift and go to state 10
+    EXEC            shift and go to state 11
 
-    statement                      shift and go to state 11
+    statement                      shift and go to state 12
 
-state 72
+state 81
 
     (22) statement -> FOR LPAREN statement SEMI expression SEMI . statement RPAREN LACC bloc RACC
     (4) statement -> . PRINT LPAREN expression RPAREN
@@ -1626,6 +1894,7 @@ state 72
     (22) statement -> . FOR LPAREN statement SEMI expression SEMI statement RPAREN LACC bloc RACC
     (23) statement -> . DEF NAME LPAREN param_list RPAREN LACC bloc RACC
     (27) statement -> . RETURN expression
+    (35) statement -> . EXEC LPAREN expression RPAREN
 
     PRINT           shift and go to state 4
     NAME            shift and go to state 5
@@ -1634,10 +1903,11 @@ state 72
     FOR             shift and go to state 8
     DEF             shift and go to state 9
     RETURN          shift and go to state 10
+    EXEC            shift and go to state 11
 
-    statement                      shift and go to state 78
+    statement                      shift and go to state 87
 
-state 73
+state 82
 
     (23) statement -> DEF NAME LPAREN param_list RPAREN LACC . bloc RACC
     (2) bloc -> . bloc statement SEMI
@@ -1650,6 +1920,7 @@ state 73
     (22) statement -> . FOR LPAREN statement SEMI expression SEMI statement RPAREN LACC bloc RACC
     (23) statement -> . DEF NAME LPAREN param_list RPAREN LACC bloc RACC
     (27) statement -> . RETURN expression
+    (35) statement -> . EXEC LPAREN expression RPAREN
 
     PRINT           shift and go to state 4
     NAME            shift and go to state 5
@@ -1658,11 +1929,12 @@ state 73
     FOR             shift and go to state 8
     DEF             shift and go to state 9
     RETURN          shift and go to state 10
+    EXEC            shift and go to state 11
 
-    bloc                           shift and go to state 79
+    bloc                           shift and go to state 88
     statement                      shift and go to state 3
 
-state 74
+state 83
 
     (24) param_list -> param_list COMMA NAME .
 
@@ -1670,7 +1942,7 @@ state 74
     COMMA           reduce using rule 24 (param_list -> param_list COMMA NAME .)
 
 
-state 75
+state 84
 
     (29) arg_list -> arg_list COMMA expression .
     (6) expression -> expression . SUP expression
@@ -1686,29 +1958,29 @@ state 75
 
     RPAREN          reduce using rule 29 (arg_list -> arg_list COMMA expression .)
     COMMA           reduce using rule 29 (arg_list -> arg_list COMMA expression .)
-    SUP             shift and go to state 30
-    INF             shift and go to state 31
-    INFEG           shift and go to state 32
-    EGALEGAL        shift and go to state 33
-    AND             shift and go to state 34
-    OR              shift and go to state 35
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
-    MINUS           shift and go to state 38
-    DIVIDE          shift and go to state 39
+    SUP             shift and go to state 34
+    INF             shift and go to state 35
+    INFEG           shift and go to state 36
+    EGALEGAL        shift and go to state 37
+    AND             shift and go to state 38
+    OR              shift and go to state 39
+    PLUS            shift and go to state 40
+    TIMES           shift and go to state 41
+    MINUS           shift and go to state 42
+    DIVIDE          shift and go to state 43
 
 
-state 76
+state 85
 
     (17) statement -> IF LPAREN expression RPAREN LACC bloc RACC .
     (18) statement -> IF LPAREN expression RPAREN LACC bloc RACC . ELSE LACC bloc RACC
 
     SEMI            reduce using rule 17 (statement -> IF LPAREN expression RPAREN LACC bloc RACC .)
     RPAREN          reduce using rule 17 (statement -> IF LPAREN expression RPAREN LACC bloc RACC .)
-    ELSE            shift and go to state 80
+    ELSE            shift and go to state 89
 
 
-state 77
+state 86
 
     (19) statement -> WHILE LPAREN expression RPAREN LACC bloc RACC .
 
@@ -1716,14 +1988,14 @@ state 77
     RPAREN          reduce using rule 19 (statement -> WHILE LPAREN expression RPAREN LACC bloc RACC .)
 
 
-state 78
+state 87
 
     (22) statement -> FOR LPAREN statement SEMI expression SEMI statement . RPAREN LACC bloc RACC
 
-    RPAREN          shift and go to state 81
+    RPAREN          shift and go to state 90
 
 
-state 79
+state 88
 
     (23) statement -> DEF NAME LPAREN param_list RPAREN LACC bloc . RACC
     (2) bloc -> bloc . statement SEMI
@@ -1735,8 +2007,9 @@ state 79
     (22) statement -> . FOR LPAREN statement SEMI expression SEMI statement RPAREN LACC bloc RACC
     (23) statement -> . DEF NAME LPAREN param_list RPAREN LACC bloc RACC
     (27) statement -> . RETURN expression
+    (35) statement -> . EXEC LPAREN expression RPAREN
 
-    RACC            shift and go to state 82
+    RACC            shift and go to state 91
     PRINT           shift and go to state 4
     NAME            shift and go to state 5
     IF              shift and go to state 6
@@ -1744,24 +2017,25 @@ state 79
     FOR             shift and go to state 8
     DEF             shift and go to state 9
     RETURN          shift and go to state 10
+    EXEC            shift and go to state 11
 
-    statement                      shift and go to state 11
+    statement                      shift and go to state 12
 
-state 80
+state 89
 
     (18) statement -> IF LPAREN expression RPAREN LACC bloc RACC ELSE . LACC bloc RACC
 
-    LACC            shift and go to state 83
+    LACC            shift and go to state 92
 
 
-state 81
+state 90
 
     (22) statement -> FOR LPAREN statement SEMI expression SEMI statement RPAREN . LACC bloc RACC
 
-    LACC            shift and go to state 84
+    LACC            shift and go to state 93
 
 
-state 82
+state 91
 
     (23) statement -> DEF NAME LPAREN param_list RPAREN LACC bloc RACC .
 
@@ -1769,7 +2043,7 @@ state 82
     RPAREN          reduce using rule 23 (statement -> DEF NAME LPAREN param_list RPAREN LACC bloc RACC .)
 
 
-state 83
+state 92
 
     (18) statement -> IF LPAREN expression RPAREN LACC bloc RACC ELSE LACC . bloc RACC
     (2) bloc -> . bloc statement SEMI
@@ -1782,6 +2056,7 @@ state 83
     (22) statement -> . FOR LPAREN statement SEMI expression SEMI statement RPAREN LACC bloc RACC
     (23) statement -> . DEF NAME LPAREN param_list RPAREN LACC bloc RACC
     (27) statement -> . RETURN expression
+    (35) statement -> . EXEC LPAREN expression RPAREN
 
     PRINT           shift and go to state 4
     NAME            shift and go to state 5
@@ -1790,11 +2065,12 @@ state 83
     FOR             shift and go to state 8
     DEF             shift and go to state 9
     RETURN          shift and go to state 10
+    EXEC            shift and go to state 11
 
-    bloc                           shift and go to state 85
+    bloc                           shift and go to state 94
     statement                      shift and go to state 3
 
-state 84
+state 93
 
     (22) statement -> FOR LPAREN statement SEMI expression SEMI statement RPAREN LACC . bloc RACC
     (2) bloc -> . bloc statement SEMI
@@ -1807,6 +2083,7 @@ state 84
     (22) statement -> . FOR LPAREN statement SEMI expression SEMI statement RPAREN LACC bloc RACC
     (23) statement -> . DEF NAME LPAREN param_list RPAREN LACC bloc RACC
     (27) statement -> . RETURN expression
+    (35) statement -> . EXEC LPAREN expression RPAREN
 
     PRINT           shift and go to state 4
     NAME            shift and go to state 5
@@ -1815,11 +2092,12 @@ state 84
     FOR             shift and go to state 8
     DEF             shift and go to state 9
     RETURN          shift and go to state 10
+    EXEC            shift and go to state 11
 
     statement                      shift and go to state 3
-    bloc                           shift and go to state 86
+    bloc                           shift and go to state 95
 
-state 85
+state 94
 
     (18) statement -> IF LPAREN expression RPAREN LACC bloc RACC ELSE LACC bloc . RACC
     (2) bloc -> bloc . statement SEMI
@@ -1831,8 +2109,9 @@ state 85
     (22) statement -> . FOR LPAREN statement SEMI expression SEMI statement RPAREN LACC bloc RACC
     (23) statement -> . DEF NAME LPAREN param_list RPAREN LACC bloc RACC
     (27) statement -> . RETURN expression
+    (35) statement -> . EXEC LPAREN expression RPAREN
 
-    RACC            shift and go to state 87
+    RACC            shift and go to state 96
     PRINT           shift and go to state 4
     NAME            shift and go to state 5
     IF              shift and go to state 6
@@ -1840,10 +2119,11 @@ state 85
     FOR             shift and go to state 8
     DEF             shift and go to state 9
     RETURN          shift and go to state 10
+    EXEC            shift and go to state 11
 
-    statement                      shift and go to state 11
+    statement                      shift and go to state 12
 
-state 86
+state 95
 
     (22) statement -> FOR LPAREN statement SEMI expression SEMI statement RPAREN LACC bloc . RACC
     (2) bloc -> bloc . statement SEMI
@@ -1855,8 +2135,9 @@ state 86
     (22) statement -> . FOR LPAREN statement SEMI expression SEMI statement RPAREN LACC bloc RACC
     (23) statement -> . DEF NAME LPAREN param_list RPAREN LACC bloc RACC
     (27) statement -> . RETURN expression
+    (35) statement -> . EXEC LPAREN expression RPAREN
 
-    RACC            shift and go to state 88
+    RACC            shift and go to state 97
     PRINT           shift and go to state 4
     NAME            shift and go to state 5
     IF              shift and go to state 6
@@ -1864,10 +2145,11 @@ state 86
     FOR             shift and go to state 8
     DEF             shift and go to state 9
     RETURN          shift and go to state 10
+    EXEC            shift and go to state 11
 
-    statement                      shift and go to state 11
+    statement                      shift and go to state 12
 
-state 87
+state 96
 
     (18) statement -> IF LPAREN expression RPAREN LACC bloc RACC ELSE LACC bloc RACC .
 
@@ -1875,7 +2157,7 @@ state 87
     RPAREN          reduce using rule 18 (statement -> IF LPAREN expression RPAREN LACC bloc RACC ELSE LACC bloc RACC .)
 
 
-state 88
+state 97
 
     (22) statement -> FOR LPAREN statement SEMI expression SEMI statement RPAREN LACC bloc RACC .
 

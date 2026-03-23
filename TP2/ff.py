@@ -126,35 +126,52 @@ def evalInst(t):
         raise ReturnException(evalExpr(t[1]))
 
 def evalExpr(t):
-    if type(t) == int: return t
-    if type(t) == str: return names[t] 
-    if type(t) == tuple: 
-        if t[0] == '+':  return evalExpr(t[1]) + evalExpr(t[2])
-        if t[0] == '-':  return evalExpr(t[1]) - evalExpr(t[2])  
-        if t[0] == '/':  return evalExpr(t[1]) / evalExpr(t[2]) 
-        if t[0] == '*':  return evalExpr(t[1]) * evalExpr(t[2])
-        if t[0] == '>':  return evalExpr(t[1]) > evalExpr(t[2])
-        if t[0] == '<':  return evalExpr(t[1]) < evalExpr(t[2])
-        if t[0] == '<=': return evalExpr(t[1]) <= evalExpr(t[2])
-        if t[0] == '==': return evalExpr(t[1]) == evalExpr(t[2])
-        if t[0] == 'eval': return evalExpr(evalExpr(t[1]))
-        if t[0] == 'string': return t[1]
+    if type(t) == int:
+        return t
+    if type(t) == str:
+        return names[t]
+    if type(t) == tuple:
+        if t[0] == '+':
+            return evalExpr(t[1]) + evalExpr(t[2])
+        if t[0] == '-':
+            return evalExpr(t[1]) - evalExpr(t[2])
+        if t[0] == '/':
+            return evalExpr(t[1]) / evalExpr(t[2])
+        if t[0] == '*':
+            return evalExpr(t[1]) * evalExpr(t[2])
+        if t[0] == '>':
+            return evalExpr(t[1]) > evalExpr(t[2])
+        if t[0] == '<':
+            return evalExpr(t[1]) < evalExpr(t[2])
+        if t[0] == '<=':
+            return evalExpr(t[1]) <= evalExpr(t[2])
+        if t[0] == '==':
+            return evalExpr(t[1]) == evalExpr(t[2])
+        if t[0] == 'eval':
+            return evalExpr(evalExpr(t[1]))
+        if t[0] == 'string':
+            return t[1]
         if t[0] == 'call':
-            # appel de fonction : on évalue les arguments
+           
             params, body = functions[t[1]]
-            arg_values = [evalExpr(a) for a in t[2]]
-            saved = dict(names)
-            names.update(dict(zip(params, arg_values)))
-            result = None
+
+          
+
+           
+            for i in range(len(params)):
+                names[params[i]] = evalExpr(t[2][i])
+
+           
             try:
                 evalInst(body)
+                return None
             except ReturnException as e:
-                result = e.value
+                return e.value
             finally:
+               
                 names.clear()
-                names.update(saved)
-            return result
-    
+                names.update(ancien)
+
 def p_start(p):
     'start : bloc'
     print(p[1])
